@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import codeu.chat.common.BasicView;
+import codeu.chat.common.ServerInfo;
 import codeu.chat.common.ConversationHeader;
 import codeu.chat.common.ConversationPayload;
 import codeu.chat.common.Message;
@@ -68,6 +69,13 @@ public final class View implements BasicView, SinglesView {
   public Collection<Message> getMessages(Collection<Uuid> ids) {
     return intersect(model.messageById(), ids);
   }
+
+  @Override
+  public ServerInfo getInfo() {
+    return null;
+    //I'm not sure if this is the correct thing to return
+  }
+
 
   @Override
   public User findUser(Uuid id) { return model.userById().first(id); }
