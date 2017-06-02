@@ -20,6 +20,7 @@ import codeu.chat.common.ConversationHeader;
 import codeu.chat.common.ConversationPayload;
 import codeu.chat.common.Message;
 import codeu.chat.common.User;
+import codeu.chat.server.ServerInfo;
 import codeu.chat.util.Uuid;
 
 // BASIC VIEW
@@ -52,4 +53,8 @@ public interface BasicView {
   //   Return all messages whose id is found in the given collection.
   Collection<Message> getMessages(Collection<Uuid> ids);
 
+  //GET INFO
+  //
+  //  Return info about the current server like version and up time
+  ServerInfo getInfo();
 }
