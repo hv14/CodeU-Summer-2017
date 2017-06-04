@@ -37,11 +37,6 @@ public interface BasicView {
   //   Return all users whose id is found in the given collection.
   Collection<User> getUsers();
 
-  //Get Server Version
-  //
-  // Return the number representing the server version
-  ServerInfo getInfo();
-
   // GET ALL CONVERSATIONS
   //
   //   Return a summary of each converation.

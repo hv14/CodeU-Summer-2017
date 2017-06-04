@@ -156,11 +156,9 @@ public final class Chat {
       public void invoke(Scanner args) {
         final ServerInfo info = context.getInfo();
         if (info == null) {
-         // Communicate error to user - the server did not send us a valid
-         // info object.
          System.out.println("Error: Server did not send valid object.");
         } else {
-          System.out.println("Server Version: 1.0.0 ");
+          System.out.println("Server Version: " + info);
          // Print the server info to the user in a pretty way
         }
       }

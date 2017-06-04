@@ -71,13 +71,6 @@ public final class View implements BasicView, SinglesView {
   }
 
   @Override
-  public ServerInfo getInfo() {
-    return null;
-    //I'm not sure if this is the correct thing to return
-  }
-
-
-  @Override
   public User findUser(Uuid id) { return model.userById().first(id); }
 
   @Override

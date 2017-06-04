@@ -96,7 +96,7 @@ public final class Server {
     });
 
 
-    //Info Request
+    // Info Request
     this.commands.put(NetworkCode.SERVER_INFO_REQUEST,  new Command() {
       @Override
       public void onMessage(InputStream in, OutputStream out) throws IOException {

@@ -69,7 +69,7 @@ final class View implements BasicView {
     return users;
   }
 
-  @Override
+
   public ServerInfo getInfo() {
   try (final Connection connection = source.connect()) {
     Serializers.INTEGER.write(connection.out(), NetworkCode.SERVER_INFO_REQUEST);
@@ -77,12 +77,9 @@ final class View implements BasicView {
       final Uuid version = Uuid.SERIALIZER.read(connection.in());
       return new ServerInfo(version);
     } else {
-      // Communicate this error - the server did not respond with the type of
-      // response we expected.
       System.out.println("Error: Unexpected response.");
     }
   } catch (Exception ex) {
-    // Communicate this error - something went wrong with the connection.
     System.out.println("Error: Invalid Connection.");
   }
   // If we get here it means something went wrong and null should be returned
