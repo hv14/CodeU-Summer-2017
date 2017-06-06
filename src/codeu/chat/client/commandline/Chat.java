@@ -158,7 +158,7 @@ public final class Chat {
         if (info == null) {
          System.out.println("Error: Server did not send valid object.");
         } else {
-          System.out.println("Server Version: " + info);
+          System.out.println("Server Version: " + info.version);
          // Print the server info to the user in a pretty way
         }
       }
