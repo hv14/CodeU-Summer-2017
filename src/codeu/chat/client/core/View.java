@@ -130,6 +130,7 @@ final class View implements BasicView {
     }
 
     return conversations;
+
   }
 
   @Override
@@ -153,5 +154,6 @@ final class View implements BasicView {
     }
 
     return messages;
+
   }
 }

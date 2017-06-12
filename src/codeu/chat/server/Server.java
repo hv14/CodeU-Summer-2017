@@ -48,8 +48,6 @@ public final class Server {
 
   private static final Logger.Log LOG = Logger.newLog(Server.class);
 
-  private static final ServerInfo info = new ServerInfo();
-
   private static final int RELAY_REFRESH_MS = 5000;  // 5 seconds
 
   private final Timeline timeline = new Timeline();
@@ -77,7 +75,7 @@ public final class Server {
       @Override
       public void onMessage(InputStream in, OutputStream out) throws IOException {
         Serializers.INTEGER.write(out, NetworkCode.SERVER_INFO_RESPONSE);
-        Time.SERIALIZER.write(out, info.startTime);
+        Time.SERIALIZER.write(out, view.getInfo().startTime);
       }
     });
 

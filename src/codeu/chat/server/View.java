@@ -89,8 +89,10 @@ public final class View implements BasicView, SinglesView {
     return all;
   }
 
+  private static final ServerInfo info = new ServerInfo();
+
   public ServerInfo getInfo() {
-    return null;
+    return info;
   }
   private static <T> Collection<T> intersect(StoreAccessor<Uuid, T> store, Collection<Uuid> ids) {
 

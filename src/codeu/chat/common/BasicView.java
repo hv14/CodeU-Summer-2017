@@ -53,7 +53,7 @@ public interface BasicView {
   //   Return all messages whose id is found in the given collection.
   Collection<Message> getMessages(Collection<Uuid> ids);
 
-  //GET INFO
+  // GET INFO
   //
   //  Return info about the current server like version and up time
   ServerInfo getInfo();
