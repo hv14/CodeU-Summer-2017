@@ -15,30 +15,19 @@
 
 package codeu.chat.server;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import codeu.chat.common.ConversationHeader;
-import codeu.chat.common.ConversationPayload;
-import codeu.chat.common.LinearUuidGenerator;
-import codeu.chat.common.Message;
-import codeu.chat.common.NetworkCode;
-import codeu.chat.common.Relay;
-import codeu.chat.common.Secret;
-import codeu.chat.common.User;
+import codeu.chat.common.*;
 import codeu.chat.util.Logger;
 import codeu.chat.util.Serializers;
 import codeu.chat.util.Time;
 import codeu.chat.util.Timeline;
 import codeu.chat.util.Uuid;
 import codeu.chat.util.connections.Connection;
+import com.google.gson.Gson;
 
 public final class Server {
 
@@ -49,6 +38,8 @@ public final class Server {
   private static final Logger.Log LOG = Logger.newLog(Server.class);
 
   private static final int RELAY_REFRESH_MS = 5000;  // 5 seconds
+
+  private static final int SAVE_DATA_BUFFER_MS = 60000; // 1 minute
 
   private final Timeline timeline = new Timeline();
 
@@ -70,6 +61,8 @@ public final class Server {
     this.secret = secret;
     this.controller = new Controller(id, model);
     this.relay = relay;
+
+    model.refreshData();
 
     this.commands.put(NetworkCode.SERVER_INFO_REQUEST, new Command() {
       @Override
@@ -110,6 +103,7 @@ public final class Server {
 
         Serializers.INTEGER.write(out, NetworkCode.NEW_USER_RESPONSE);
         Serializers.nullable(User.SERIALIZER).write(out, user);
+
       }
     });
 
@@ -179,6 +173,48 @@ public final class Server {
         Serializers.collection(Message.SERIALIZER).write(out, messages);
       }
     });
+
+    this.timeline.scheduleNow(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          LOG.info("Saving current state...");
+          UserCollection currentUsers = new UserCollection(model.currentUsers);
+          ConversationCollection currentConversations = new ConversationCollection(model.currentConversations);
+          MessageCollection currentMessages = new MessageCollection(model.currentMessages);
+
+          Gson gson = new Gson();
+          String jsonUsers = gson.toJson(currentUsers);
+          String jsonConversations = gson.toJson(currentConversations);
+          String jsonMessages = gson.toJson(currentMessages);
+
+          System.out.println(jsonUsers);
+
+          File savedUsers = new File("/Users/himonal/Documents/CodeU-Summer-2017/savedUsers.txt");
+          File savedConvos = new File("/Users/himonal/Documents/CodeU-Summer-2017/savedConvos.txt");
+          File savedMessages = new File("/Users/himonal/Documents/CodeU-Summer-2017/savedMessages.txt");
+          FileWriter fu = new FileWriter(savedUsers);
+          fu.write(jsonUsers);
+          fu.close();
+
+          FileWriter fc = new FileWriter(savedConvos);
+          fc.write(jsonConversations);
+          fc.close();
+
+          FileWriter fm = new FileWriter(savedMessages);
+          fm.write(jsonMessages);
+          fm.close();
+
+        } catch (Exception ex) {
+
+          System.out.print(ex);
+          LOG.error("Failed to save data");
+        }
+
+        timeline.scheduleIn(SAVE_DATA_BUFFER_MS, this);
+      }
+    });
+
 
     this.timeline.scheduleNow(new Runnable() {
       @Override
