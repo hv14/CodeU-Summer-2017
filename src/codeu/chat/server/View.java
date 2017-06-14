@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import codeu.chat.common.BasicView;
+import codeu.chat.common.ServerInfo;
 import codeu.chat.common.ConversationHeader;
 import codeu.chat.common.ConversationPayload;
 import codeu.chat.common.Message;
