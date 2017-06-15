@@ -56,6 +56,7 @@ public final class Model {
       }
 
       for (Message msg: pastMessages.messages) {
+        System.out.println(msg.content + " , " + msg.id);
         add(msg);
       }
 

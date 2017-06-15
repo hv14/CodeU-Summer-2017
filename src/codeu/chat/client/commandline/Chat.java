@@ -108,6 +108,8 @@ public final class Chat {
         System.out.println("    Add a new user with the given name.");
         System.out.println("  u-sign-in <name>");
         System.out.println("    Sign in as the user with the given name.");
+        System.out.println("  info");
+        System.out.println("    Display all the info about the current system");
         System.out.println("  exit");
         System.out.println("    Exit the program.");
       }
@@ -182,6 +184,11 @@ public final class Chat {
       }
     });
 
+    // info
+    //
+    // Display the start time of the server when the user types
+    // "info" while on the root panel.
+    //
     panel.register("u-info", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
