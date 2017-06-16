@@ -69,23 +69,23 @@ final class View implements BasicView {
     return users;
   }
 
-
   public ServerInfo getInfo() {
-  try (final Connection connection = source.connect()) {
-    Serializers.INTEGER.write(connection.out(), NetworkCode.SERVER_INFO_REQUEST);
-    if (Serializers.INTEGER.read(connection.in()) == NetworkCode.SERVER_INFO_RESPONSE) {
-      final Uuid version = Uuid.SERIALIZER.read(connection.in());
-      return new ServerInfo(version);
-    } else {
-      System.out.println("Error: Unexpected response.");
+    try (final Connection connection = this.source.connect()) {
+      Serializers.INTEGER.write(connection.out(), NetworkCode.SERVER_INFO_REQUEST);
+      if (Serializers.INTEGER.read(connection.in()) == NetworkCode.SERVER_INFO_RESPONSE) {
+        final Time startTime = Time.SERIALIZER.read(connection.in());
+        final Uuid version = Uuid.SERIALIZER.read(connection.in());
+        return new ServerInfo(version, startTime);
+      } else {
+        LOG.error("Response from server failed.");
+      }
+    } catch (Exception ex) {
+      System.out.println("ERROR: Exception during call on server. Check log for details.");
+      LOG.error(ex, "Exception during call on server.");
     }
-  } catch (Exception ex) {
-    System.out.println("Error: Invalid Connection.");
-  }
-  // If we get here it means something went wrong and null should be returned
-  return null;
-}
 
+    return null;
+  }
 
   @Override
   public Collection<ConversationHeader> getConversations() {
@@ -131,6 +131,7 @@ final class View implements BasicView {
     }
 
     return conversations;
+
   }
 
   @Override
@@ -154,5 +155,6 @@ final class View implements BasicView {
     }
 
     return messages;
+
   }
 }
