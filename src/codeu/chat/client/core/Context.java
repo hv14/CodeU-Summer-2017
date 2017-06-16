@@ -28,7 +28,7 @@ import codeu.chat.util.connections.ConnectionSource;
 
 public final class Context {
 
-  private final BasicView view;
+  private final View view;
   private final Controller controller;
 
   public Context(ConnectionSource source) {

@@ -17,6 +17,7 @@ package codeu.chat.client.commandline;
 import java.util.Scanner;
 import java.util.Stack;
 
+import codeu.chat.common.ServerInfo;
 import codeu.chat.client.core.Context;
 import codeu.chat.client.core.ConversationContext;
 import codeu.chat.client.core.MessageContext;
@@ -100,6 +101,8 @@ public final class Chat {
       @Override
       public void invoke(Scanner args) {
         System.out.println("ROOT MODE");
+        System.out.println("  info");
+        System.out.println("     Output Server Version.");
         System.out.println("  u-list");
         System.out.println("    List all users.");
         System.out.println("  u-add <name>");
@@ -149,6 +152,20 @@ public final class Chat {
       }
     });
 
+    panel.register("info", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final ServerInfo info = context.getInfo();
+        if (info == null) {
+         System.out.println("Error: Server did not send valid object.");
+        } else {
+          System.out.println("Server Version: " + info.version + " start time: " + info.startTime);
+         // Print the server info to the user in a pretty way
+        }
+      }
+    });
+
+
     // U-SIGN-IN (sign in user)
     //
     // Add a command to sign-in as a user when the user enters "u-sign-in"
@@ -179,23 +196,6 @@ public final class Chat {
           }
         }
         return null;
-      }
-    });
-
-    // info
-    //
-    // Display the start time of the server when the user types
-    // "info" while on the root panel.
-    //
-    panel.register("u-info", new Panel.Command() {
-      @Override
-      public void invoke(Scanner args) {
-        final ServerInfo info = context.getInfo();
-        if (info == null) {
-          System.out.println("No info was found");
-        } else {
-          System.out.println("start time: " + context.getInfo().startTime);
-        }
       }
     });
 
