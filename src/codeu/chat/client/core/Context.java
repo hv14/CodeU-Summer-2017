@@ -20,9 +20,11 @@ import java.util.Collection;
 
 import codeu.chat.common.BasicView;
 import codeu.chat.common.User;
-import codeu.chat.server.ServerInfo;
+import codeu.chat.common.ServerInfo;
+import codeu.chat.client.core.View;
 import codeu.chat.util.Uuid;
 import codeu.chat.util.connections.ConnectionSource;
+
 
 public final class Context {
 
