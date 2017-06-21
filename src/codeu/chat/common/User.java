@@ -27,6 +27,35 @@ public final class User {
 
   public static final Serializer<User> SERIALIZER = new Serializer<User>() {
 
+  //first table : key = title of convo, value = true/false depending on interestConvos
+  //second table: key = user, value = true/false depending on interestConvos
+  // third table: key = convo title, value = the last time update was called
+  public static final Hashtable interestConvos =  new Hashtable();
+  public static final Hashtable interestUsers =  new Hashtable();
+  public static final Hashtable lastUpdateConvos = new Hashtable();
+  public static final Hashtable lastUpdateUsers = new Hashtables();
+
+  public static final Hash
+    public void setHashTable(String title){
+        interestConvos.put(title, True);
+    }
+
+    public void interestedConvo(String title){
+      interestConvos.put(title, True);
+    }
+
+    public void uninterestedConvo(String Title){
+      interestConvos.remove(title);
+    }
+
+    public void interestedUser(String title){
+      interestUsers.put(title, True);
+    }
+
+    public void uninterestedUser(String Title){
+      interestUsers.put(title, False);
+    }
+
     @Override
     public void write(OutputStream out, User value) throws IOException {
 

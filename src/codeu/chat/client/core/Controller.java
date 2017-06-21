@@ -53,6 +53,7 @@ final class Controller implements BasicController {
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_MESSAGE_RESPONSE) {
         response = Serializers.nullable(Message.SERIALIZER).read(connection.in());
+
       } else {
         LOG.error("Response from server failed.");
       }
@@ -74,10 +75,14 @@ final class Controller implements BasicController {
       Serializers.INTEGER.write(connection.out(), NetworkCode.NEW_USER_REQUEST);
       Serializers.STRING.write(connection.out(), name);
       LOG.info("newUser: Request completed.");
+      //unsure if this is correct syntax
+      User.userInterest.put(name,False);
+      User.lastUpdateUsers.put(name , 0);
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_USER_RESPONSE) {
         response = Serializers.nullable(User.SERIALIZER).read(connection.in());
         LOG.info("newUser: Response completed.");
+
       } else {
         LOG.error("Response from server failed.");
       }
@@ -99,6 +104,8 @@ final class Controller implements BasicController {
       Serializers.INTEGER.write(connection.out(), NetworkCode.NEW_CONVERSATION_REQUEST);
       Serializers.STRING.write(connection.out(), title);
       Uuid.SERIALIZER.write(connection.out(), owner);
+      User.interestConvos.put(title, False);
+      User.lastUpdateConvos.put(title, 0);
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_CONVERSATION_RESPONSE) {
         response = Serializers.nullable(ConversationHeader.SERIALIZER).read(connection.in());
