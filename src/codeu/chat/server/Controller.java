@@ -14,18 +14,15 @@
 
 package codeu.chat.server;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
-import codeu.chat.common.BasicController;
-import codeu.chat.common.ConversationHeader;
-import codeu.chat.common.ConversationPayload;
-import codeu.chat.common.Message;
-import codeu.chat.common.RandomUuidGenerator;
-import codeu.chat.common.RawController;
-import codeu.chat.common.User;
+import codeu.chat.common.*;
 import codeu.chat.util.Logger;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
+import com.google.gson.Gson;
 
 public final class Controller implements RawController, BasicController {
 
@@ -34,10 +31,30 @@ public final class Controller implements RawController, BasicController {
   private final Model model;
   private final Uuid.Generator uuidGenerator;
 
+  public ArrayList<Message> currentMessages = new ArrayList<>();
+
+
   public Controller(Uuid serverId, Model model) {
     this.model = model;
     this.uuidGenerator = new RandomUuidGenerator(serverId, System.currentTimeMillis());
   }
+
+  public void refreshData() {
+    Gson gson = new Gson();
+    try {
+      String jsonMessages = model.getJsonFileContents("/Users/hv58535/CodeU-Summer-2017/savedMessages.txt");
+      MessageCollection pastMessages = gson.fromJson(jsonMessages, MessageCollection.class);
+      for (Message msg: pastMessages.messages) {
+        //newMessage(msg.author, msg.convoId, msg.content);
+        newMessage(msg.id, msg.author, msg.convoId, msg.content, msg.creation);
+      }
+    }
+    catch (Exception ex) {
+      System.out.println(ex);
+    }
+  }
+
+
 
   @Override
   public Message newMessage(Uuid author, Uuid conversation, String body) {
@@ -64,8 +81,9 @@ public final class Controller implements RawController, BasicController {
 
     if (foundUser != null && foundConversation != null && isIdFree(id)) {
 
-      message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body);
+      message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body, conversation);
       model.add(message);
+      //currentMessages.add(message);
       LOG.info("Message added: %s", message.id);
 
       // Find and update the previous "last" message so that it's "next" value

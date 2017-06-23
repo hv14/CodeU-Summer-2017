@@ -38,14 +38,14 @@ public final class Model {
     Gson gson = new Gson();
     try {
 
-      String jsonUsers = getJsonFileContents("/Users/himonal/Documents/CodeU-Summer-2017/savedUsers.txt");
+      String jsonUsers = getJsonFileContents("/Users/hv58535/CodeU-Summer-2017/savedUsers.txt");
       UserCollection pastUsers = gson.fromJson(jsonUsers, UserCollection.class);
 
-      String jsonConversations = getJsonFileContents("/Users/himonal/Documents/CodeU-Summer-2017/savedConvos.txt");
+      String jsonConversations = getJsonFileContents("/Users/hv58535/CodeU-Summer-2017/savedConvos.txt");
       ConversationCollection pastConovs = gson.fromJson(jsonConversations, ConversationCollection.class);
 
-      String jsonMessages = getJsonFileContents("/Users/himonal/Documents/CodeU-Summer-2017/savedMessages.txt");
-      MessageCollection pastMessages = gson.fromJson(jsonMessages, MessageCollection.class);
+      //String jsonMessages = getJsonFileContents("/Users/hv58535/CodeU-Summer-2017/savedMessages.txt");
+      //MessageCollection pastMessages = gson.fromJson(jsonMessages, MessageCollection.class);
 
       for (User user: pastUsers.users) {
         add(user);
@@ -55,9 +55,10 @@ public final class Model {
         add(convo);
       }
 
-      for (Message msg: pastMessages.messages) {
-        add(msg);
-      }
+      //for (Message msg: pastMessages.messages) {
+
+        //add(msg);
+      //}
 
     } catch (Exception ex) {
       System.out.println(ex);

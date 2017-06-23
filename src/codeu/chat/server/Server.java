@@ -39,7 +39,7 @@ public final class Server {
 
   private static final int RELAY_REFRESH_MS = 5000;  // 5 seconds
 
-  private static final int SAVE_DATA_BUFFER_MS = 60000; // 1 minute
+  private static final int SAVE_DATA_BUFFER_MS = 30000; // 30 seconds
 
   private final Timeline timeline = new Timeline();
 
@@ -63,6 +63,7 @@ public final class Server {
     this.relay = relay;
 
     model.refreshData();
+    controller.refreshData();
 
     this.commands.put(NetworkCode.SERVER_INFO_REQUEST, new Command() {
       @Override
@@ -190,9 +191,9 @@ public final class Server {
 
           System.out.println(jsonUsers);
 
-          File savedUsers = new File("/Users/himonal/Documents/CodeU-Summer-2017/savedUsers.txt");
-          File savedConvos = new File("/Users/himonal/Documents/CodeU-Summer-2017/savedConvos.txt");
-          File savedMessages = new File("/Users/himonal/Documents/CodeU-Summer-2017/savedMessages.txt");
+          File savedUsers = new File("/Users/hv58535/CodeU-Summer-2017/savedUsers.txt");
+          File savedConvos = new File("/Users/hv58535/CodeU-Summer-2017/savedConvos.txt");
+          File savedMessages = new File("/Users/hv58535/CodeU-Summer-2017/savedMessages.txt");
           FileWriter fu = new FileWriter(savedUsers);
           fu.write(jsonUsers);
           fu.close();
