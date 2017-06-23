@@ -19,8 +19,9 @@ public final class Tokenizer {
   }
   
   private int remaining() {
-      return source.length() - at;
+    return source.length() - at;
     }
+  
   private char peek() throws IOException {
     if (at < source.length()) {
       return source.charAt(at);
@@ -28,6 +29,7 @@ public final class Tokenizer {
       throw new IOException("End Of String");
     }
   }
+  
   private char read() throws IOException {
     final char c = peek();
     at += 1;
@@ -35,17 +37,19 @@ public final class Tokenizer {
   }
   
   public String next() throws IOException {
-  // Skip all leading whitespace
-    String tokenCreation = "";
+  
+    String tokenCreation;
+ // Skip all leading whitespace
+
     while (remaining() > 0 && Character.isWhitespace(peek()) ) {
       read();  // ignore the result because we already know that it is a whitespace character
     }
     if (remaining() <= 0) {
       return null;
     } else if (peek() == '"') {
-      tokenCreation += readWithNoQuotes(); //need to check
+      tokenCreation = readWithQuotes(); //need to check
     } else {
-      tokenCreation += readWithQuotes(); //need to check
+      tokenCreation = readWithNoQuotes();  //need to check
     }
     return tokenCreation;
   }
@@ -69,11 +73,5 @@ public final class Tokenizer {
     read(); // read the closing the quote that allowed us to exit the loop
     return token.toString();
   }
-  
 
-
-
- 
-
-  
 }
