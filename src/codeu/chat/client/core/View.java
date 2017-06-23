@@ -23,6 +23,7 @@ import codeu.chat.common.ConversationPayload;
 import codeu.chat.common.Message;
 import codeu.chat.common.NetworkCode;
 import codeu.chat.common.User;
+import codeu.chat.common.ServerInfo;
 import codeu.chat.util.Logger;
 import codeu.chat.util.Serializers;
 import codeu.chat.util.Time;
@@ -66,6 +67,24 @@ final class View implements BasicView {
     }
 
     return users;
+  }
+
+  public ServerInfo getInfo() {
+    try (final Connection connection = this.source.connect()) {
+      Serializers.INTEGER.write(connection.out(), NetworkCode.SERVER_INFO_REQUEST);
+      if (Serializers.INTEGER.read(connection.in()) == NetworkCode.SERVER_INFO_RESPONSE) {
+        final Time startTime = Time.SERIALIZER.read(connection.in());
+        final Uuid version = Uuid.SERIALIZER.read(connection.in());
+        return new ServerInfo(version, startTime);
+      } else {
+        LOG.error("Response from server failed.");
+      }
+    } catch (Exception ex) {
+      System.out.println("ERROR: Exception during call on server. Check log for details.");
+      LOG.error(ex, "Exception during call on server.");
+    }
+
+    return null;
   }
 
   @Override
@@ -112,6 +131,7 @@ final class View implements BasicView {
     }
 
     return conversations;
+
   }
 
   @Override
@@ -135,5 +155,6 @@ final class View implements BasicView {
     }
 
     return messages;
+
   }
 }
