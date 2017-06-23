@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import codeu.chat.common.*;
+import codeu.chat.util.Json;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
 import codeu.chat.util.store.Store;
@@ -34,18 +35,16 @@ public final class Model {
   public ArrayList<ConversationHeader> currentConversations = new ArrayList<>();
 
 
+  //Used to load the saved users and conversations
   public void refreshData() {
     Gson gson = new Gson();
+    Json json = new Json();
     try {
-
-      String jsonUsers = getJsonFileContents("/Users/hv58535/CodeU-Summer-2017/savedUsers.txt");
+      String jsonUsers = json.read("savedUsers.txt");
       UserCollection pastUsers = gson.fromJson(jsonUsers, UserCollection.class);
 
-      String jsonConversations = getJsonFileContents("/Users/hv58535/CodeU-Summer-2017/savedConvos.txt");
+      String jsonConversations = json.read("savedConvos.txt");
       ConversationCollection pastConovs = gson.fromJson(jsonConversations, ConversationCollection.class);
-
-      //String jsonMessages = getJsonFileContents("/Users/hv58535/CodeU-Summer-2017/savedMessages.txt");
-      //MessageCollection pastMessages = gson.fromJson(jsonMessages, MessageCollection.class);
 
       for (User user: pastUsers.users) {
         add(user);
@@ -55,41 +54,10 @@ public final class Model {
         add(convo);
       }
 
-      //for (Message msg: pastMessages.messages) {
-
-        //add(msg);
-      //}
-
     } catch (Exception ex) {
       System.out.println(ex);
     }
   }
-
-  public String getJsonFileContents(String file) {
-    try {
-      File savedData = new File(file);
-      FileReader fr = new FileReader(savedData);
-      BufferedReader br = new BufferedReader(fr);
-      StringBuilder sb = new StringBuilder();
-      String line = br.readLine();
-      while (line != null) {
-        sb.append(line);
-        line = br.readLine();
-      }
-      String jsonData = sb.toString();
-      System.out.println(jsonData);
-
-      fr.close();
-      br.close();
-      return jsonData;
-    }
-    catch (Exception ex) {
-      System.out.println(ex);
-    }
-
-    return "";
-  }
-
 
   private static final Comparator<Uuid> UUID_COMPARE = new Comparator<Uuid>() {
 
@@ -135,6 +103,7 @@ public final class Model {
     userByTime.insert(user.creation, user);
     userByText.insert(user.name, user);
 
+    //add the user to an array that is used to save to a text file
     currentUsers.add(user);
   }
 
@@ -156,6 +125,7 @@ public final class Model {
     conversationByText.insert(conversation.title, conversation);
     conversationPayloadById.insert(conversation.id, new ConversationPayload(conversation.id));
 
+    //add the conversation to an array that is used to save to a text file
     currentConversations.add(conversation);
   }
 
@@ -180,6 +150,7 @@ public final class Model {
     messageByTime.insert(message.creation, message);
     messageByText.insert(message.content, message);
 
+    //add the message to an array that is used to save to a text file
     currentMessages.add(message);
   }
 

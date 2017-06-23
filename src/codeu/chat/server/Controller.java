@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import codeu.chat.common.*;
+import codeu.chat.util.Json;
 import codeu.chat.util.Logger;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
@@ -39,13 +40,14 @@ public final class Controller implements RawController, BasicController {
     this.uuidGenerator = new RandomUuidGenerator(serverId, System.currentTimeMillis());
   }
 
+  //Used to load the saved messages
   public void refreshData() {
     Gson gson = new Gson();
+    Json json = new Json();
     try {
-      String jsonMessages = model.getJsonFileContents("/Users/hv58535/CodeU-Summer-2017/savedMessages.txt");
+      String jsonMessages = json.read("savedMessages.txt");
       MessageCollection pastMessages = gson.fromJson(jsonMessages, MessageCollection.class);
       for (Message msg: pastMessages.messages) {
-        //newMessage(msg.author, msg.convoId, msg.content);
         newMessage(msg.id, msg.author, msg.convoId, msg.content, msg.creation);
       }
     }
@@ -83,7 +85,6 @@ public final class Controller implements RawController, BasicController {
 
       message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body, conversation);
       model.add(message);
-      //currentMessages.add(message);
       LOG.info("Message added: %s", message.id);
 
       // Find and update the previous "last" message so that it's "next" value

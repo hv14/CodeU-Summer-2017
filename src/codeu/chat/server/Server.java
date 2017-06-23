@@ -21,11 +21,7 @@ import java.net.Socket;
 import java.util.*;
 
 import codeu.chat.common.*;
-import codeu.chat.util.Logger;
-import codeu.chat.util.Serializers;
-import codeu.chat.util.Time;
-import codeu.chat.util.Timeline;
-import codeu.chat.util.Uuid;
+import codeu.chat.util.*;
 import codeu.chat.util.connections.Connection;
 import com.google.gson.Gson;
 
@@ -39,7 +35,7 @@ public final class Server {
 
   private static final int RELAY_REFRESH_MS = 5000;  // 5 seconds
 
-  private static final int SAVE_DATA_BUFFER_MS = 30000; // 30 seconds
+  private static final int SAVE_DATA_BUFFER_MS = 30000; // 30 seconds. If you want to save more or less frequently change this number
 
   private final Timeline timeline = new Timeline();
 
@@ -175,36 +171,22 @@ public final class Server {
       }
     });
 
+    //This saves everything to their respective textfiles
     this.timeline.scheduleNow(new Runnable() {
       @Override
       public void run() {
         try {
           LOG.info("Saving current state...");
-          UserCollection currentUsers = new UserCollection(model.currentUsers);
-          ConversationCollection currentConversations = new ConversationCollection(model.currentConversations);
-          MessageCollection currentMessages = new MessageCollection(model.currentMessages);
 
           Gson gson = new Gson();
-          String jsonUsers = gson.toJson(currentUsers);
-          String jsonConversations = gson.toJson(currentConversations);
-          String jsonMessages = gson.toJson(currentMessages);
+          Json json = new Json();
+          String jsonUsers = gson.toJson(new UserCollection(model.currentUsers));
+          String jsonConversations = gson.toJson(new ConversationCollection(model.currentConversations));
+          String jsonMessages = gson.toJson(new MessageCollection(model.currentMessages));
 
-          System.out.println(jsonUsers);
-
-          File savedUsers = new File("/Users/hv58535/CodeU-Summer-2017/savedUsers.txt");
-          File savedConvos = new File("/Users/hv58535/CodeU-Summer-2017/savedConvos.txt");
-          File savedMessages = new File("/Users/hv58535/CodeU-Summer-2017/savedMessages.txt");
-          FileWriter fu = new FileWriter(savedUsers);
-          fu.write(jsonUsers);
-          fu.close();
-
-          FileWriter fc = new FileWriter(savedConvos);
-          fc.write(jsonConversations);
-          fc.close();
-
-          FileWriter fm = new FileWriter(savedMessages);
-          fm.write(jsonMessages);
-          fm.close();
+          json.write("savedUsers.txt", jsonUsers);
+          json.write("savedConvos.txt", jsonConversations);
+          json.write("savedMessages.txt", jsonMessages);
 
         } catch (Exception ex) {
 
