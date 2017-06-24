@@ -23,6 +23,7 @@ import codeu.chat.client.core.ConversationContext;
 import codeu.chat.client.core.MessageContext;
 import codeu.chat.client.core.UserContext;
 import codeu.chat.common.User;
+import codeu.chat.util.Uuid;
 
 public final class Chat {
 
@@ -385,6 +386,25 @@ public final class Chat {
       }
     });
 
+    panel.register("c-list-interested-users", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        for (Uuid userId : user.listInterestedUsers()) {
+          System.out.println("USER ID: " + userId);
+        }
+      }
+    });
+
+    panel.register("c-list-interested-convo", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        for (Uuid convoId : user.listInterestedConvos()) {
+          System.out.println("CONVO ID: " + convoId);
+        }
+      }
+    });
+
+
     panel.register("c-add-interested-user", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
@@ -404,11 +424,16 @@ public final class Chat {
 
 
       public User findOtherUser(String name) {
-        Iterator<User> it = user.view.getUsers().iterator();
-        while (it.hasNext()) {
-          if (it.next().name.equalsIgnoreCase(name)) {
-            return it.next();
+        try {
+          Iterator<User> it = user.view.getUsers().iterator();
+          while (it.hasNext()) {
+            if (it.next().name.equalsIgnoreCase(name)) {
+              return it.next();
+            }
           }
+        }
+        catch (Exception e) {
+          System.out.println(e);
         }
 
         return null;
@@ -434,11 +459,16 @@ public final class Chat {
       }
 
       public ConversationHeader findConversation(String convoName) {
-        Iterator<ConversationHeader> it = user.view.getConversations().iterator();
-        while (it.hasNext()) {
-          if (it.next().title.equalsIgnoreCase(convoName)) {
-            return it.next();
+        try {
+          Iterator<ConversationHeader> it = user.view.getConversations().iterator();
+          while (it.hasNext()) {
+            if (it.next().title.equalsIgnoreCase(convoName)) {
+              return it.next();
+            }
           }
+        }
+        catch (Exception e) {
+          System.out.println(e);
         }
 
         return null;

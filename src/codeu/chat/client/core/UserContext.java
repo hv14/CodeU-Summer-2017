@@ -16,6 +16,7 @@ package codeu.chat.client.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import codeu.chat.common.BasicController;
@@ -42,6 +43,14 @@ public final class UserContext {
 
   public void addInterestedConvo(Uuid convoId) {
     user.interestedConvos.add(convoId);
+  }
+
+  public HashSet<Uuid> listInterestedUsers() {
+    return user.interestedUsers;
+  }
+
+  public HashSet<Uuid> listInterestedConvos() {
+    return user.interestedConvos;
   }
 
 
