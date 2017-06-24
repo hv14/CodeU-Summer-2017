@@ -17,6 +17,9 @@ package codeu.chat.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
 
 import codeu.chat.util.Serializer;
 import codeu.chat.util.Serializers;
@@ -26,55 +29,6 @@ import codeu.chat.util.Uuid;
 public final class User {
 
   public static final Serializer<User> SERIALIZER = new Serializer<User>() {
-
-  //first table : key = title of convo, value = true/false depending on interestConvos
-  //second table: key = user, value = true/false depending on interestConvos
-  // third table: key = convo title, value = the last time update was called
-  public static final Set interestConvos =  new HashSet();
-  public static final Set interestUsers =  new HashSet();
-  public static final Hashtable lastUpdateConvos = new Hashtable();
-  public static final Hashtable lastUpdateUsers = new Hashtables();
-
-  public static final Hash
-    public void setHashTable(String title){
-        interestConvos.put(title, True);
-    }
-
-    public void setlastUpdateConvos(UUID titleID, long time){
-      return lastUpdateConvos(title, time);
-    }
-    public void setlastUpdateUsers(UUID nameID, Long time){
-      return interestUsers.add(nameID, time);
-    }
-    public Set getInterestConvos(){
-      return interestedConvo;
-    }
-    public Set getInterestUsers(){
-      return interestedUsers;
-    }
-
-    public Hashtable getLastUpdateConvos(){
-      return lastUpdateConvos;
-    }
-    public Hashtable getLastUpdateUsers(){
-      return lastUpdateUsers;
-    }
-
-    public void interestedConvo(String title){
-      interestConvos.add(title);
-    }
-
-    public void uninterestedConvo(String Title){
-      interestConvos.remove(title);
-    }
-
-    public void interestedUser(String title){
-      interestUsers.add(title);
-    }
-
-    public void uninterestedUser(String Title){
-      interestUsers.put(title, False);
-    }
 
     @Override
     public void write(OutputStream out, User value) throws IOException {
@@ -100,6 +54,17 @@ public final class User {
   public final Uuid id;
   public final String name;
   public final Time creation;
+  public HashSet<Uuid> interestedConvos = new HashSet<>();
+  public HashSet<Uuid> interestedUsers = new HashSet<>();
+  public Time lastUpdateConvos;
+  public Time lastUpdateUsers;
+
+  public Time getLastUpdateConvos(){
+    return lastUpdateConvos;
+  }
+  public Time getLastUpdateUsers() {
+    return lastUpdateUsers;
+  }
 
   public User(Uuid id, String name, Time creation) {
 

@@ -14,16 +14,15 @@
 
 package codeu.chat.client.commandline;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
+import codeu.chat.common.ConversationHeader;
 import codeu.chat.common.ServerInfo;
 import codeu.chat.client.core.Context;
 import codeu.chat.client.core.ConversationContext;
 import codeu.chat.client.core.MessageContext;
 import codeu.chat.client.core.UserContext;
+import codeu.chat.common.User;
 
 public final class Chat {
 
@@ -182,23 +181,25 @@ public final class Chat {
       }
     });
 
-//status update for users
+/*//status update for users
     panel.register("update-status-user <username>", new Panel.Command() {
     //Check to see what conversation this user has started and how many messages they've sent
     //need to loop through the log and count new convos and new messages
     //messages specifically from that user
-    public void invoke(Scanner args) {
-      final String name = args.hasNext() ? args.nextLine().trim() : "";
-      if (name.length() > 0) {
-        if (context.create(name) == null) {
-          System.out.println("ERROR: Failed to update user status");
-        } else{
-          context.update-status-user(name);
-      } else {
-        System.out.println("ERROR: Missing <username>");
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (context.create(name) == null) {
+            System.out.println("ERROR: Failed to update user status");
+          } else {
+            context.statusUpdateUsers(name);
+          }
+        } else {
+          System.out.println("ERROR: Missing <username>");
         }
-    }
-  });
+      }
+
+    });
 
 
 //Status update for conversations
@@ -207,7 +208,7 @@ public final class Chat {
     public void invoke(Scanner args) {
       final String name = args.hasNext() ? args.nextLine().trim() : "";
       if (name.length() > 0) {
-          context.updateStatusSonversation(name);
+          context.updateStatusConvo(name);
       } else {
           System.out.println("ERROR: Missing <conversation name>");
         }
@@ -277,7 +278,7 @@ public final class Chat {
           System.out.println("ERROR: Missing <conversation>");
         }
       }
-    });
+    }); */
 
     // U-SIGN-IN (sign in user)
     //
@@ -304,7 +305,7 @@ public final class Chat {
       // for that user. If no user is found, the function will return null.
       private UserContext findUser(String name) {
         for (final UserContext user : context.allUsers()) {
-          if (user.name.equals(name)) {
+          if (user.user.name.equals(name)) {
             return user;
           }
         }
@@ -384,6 +385,66 @@ public final class Chat {
       }
     });
 
+    panel.register("c-add-interested-user", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (findOtherUser(name) != null) {
+            User otherUser = findOtherUser(name);
+            user.addInterestedUser(otherUser.id);
+          }
+          else {
+            System.out.println("ERROR: could not find " + name);
+          }
+        } else {
+          System.out.println("ERROR: Missing <username>");
+        }
+      }
+
+
+      public User findOtherUser(String name) {
+        Iterator<User> it = user.view.getUsers().iterator();
+        while (it.hasNext()) {
+          if (it.next().name.equalsIgnoreCase(name)) {
+            return it.next();
+          }
+        }
+
+        return null;
+      }
+
+    });
+
+    panel.register("c-add-interested-convo", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (findConversation(name) != null) {
+            ConversationHeader convo = findConversation(name);
+            user.addInterestedConvo(convo.id);
+          }
+          else {
+            System.out.println("ERROR: could not find " + name);
+          }
+        } else {
+          System.out.println("ERROR: Missing <conversation name>");
+        }
+      }
+
+      public ConversationHeader findConversation(String convoName) {
+        Iterator<ConversationHeader> it = user.view.getConversations().iterator();
+        while (it.hasNext()) {
+          if (it.next().title.equalsIgnoreCase(convoName)) {
+            return it.next();
+          }
+        }
+
+        return null;
+      }
+    });
+
     // C-JOIN (join conversation)
     //
     // Add a command that will joing a conversation when the user enters
@@ -404,6 +465,7 @@ public final class Chat {
           System.out.println("ERROR: Missing <title>");
         }
       }
+
 
       // Find the first conversation with the given name and return its context.
       // If no conversation has the given name, this will return null.
