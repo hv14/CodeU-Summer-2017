@@ -71,6 +71,8 @@ public final class User {
     this.id = id;
     this.name = name;
     this.creation = creation;
+    lastUpdateConvos = creation;
+    lastUpdateUsers = creation;
 
   }
 }

@@ -328,6 +328,8 @@ public final class Chat {
         System.out.println("    Add a user to follow.");
         System.out.println("  c-add-interested-convo <convo name>");
         System.out.println("    Add a convo to follow.");
+        System.out.println("  c-status-update-convos");
+        System.out.println("    Get a status update of the conversations you are following.");
         System.out.println("  info");
         System.out.println("    Display all info for the current user");
         System.out.println("  back");
@@ -417,8 +419,9 @@ public final class Chat {
         try {
           Iterator<User> it = user.view.getUsers().iterator();
           while (it.hasNext()) {
-            if (it.next().name.equalsIgnoreCase(name)) {
-              return it.next();
+            User curr = it.next();
+            if (curr.name.equalsIgnoreCase(name)) {
+              return curr;
             }
           }
         }
@@ -429,6 +432,41 @@ public final class Chat {
         return null;
       }
 
+    });
+
+    panel.register("c-del-interested-user", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (findOtherUser(name) != null) {
+            User otherUser = findOtherUser(name);
+            user.delInterestedUser(otherUser.id);
+          }
+          else {
+            System.out.println("ERROR: could not find " + name);
+          }
+        } else {
+          System.out.println("ERROR: Missing <username>");
+        }
+      }
+
+      public User findOtherUser(String name) {
+        try {
+          Iterator<User> it = user.view.getUsers().iterator();
+          while (it.hasNext()) {
+            User curr = it.next();
+            if (curr.name.equalsIgnoreCase(name)) {
+              return curr;
+            }
+          }
+        }
+        catch (Exception e) {
+          System.out.println(e);
+        }
+
+        return null;
+      }
     });
 
     panel.register("c-add-interested-convo", new Panel.Command() {
@@ -452,8 +490,9 @@ public final class Chat {
         try {
           Iterator<ConversationHeader> it = user.view.getConversations().iterator();
           while (it.hasNext()) {
-            if (it.next().title.equalsIgnoreCase(convoName)) {
-              return it.next();
+            ConversationHeader curr = it.next();
+            if (curr.title.equalsIgnoreCase(convoName)) {
+              return curr;
             }
           }
         }
@@ -465,19 +504,55 @@ public final class Chat {
       }
     });
 
-    panel.register("c-update-interested-users", new Panel.Command() {
+    panel.register("c-del-interested-convo", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
         final String name = args.hasNext() ? args.nextLine().trim() : "";
         if (name.length() > 0) {
-          final ConversationContext conversation = user.start(name);
-          if (conversation == null) {
-            System.out.println("ERROR: Failed to create new conversation");
+          if (findConversation(name) != null) {
+            ConversationHeader convo = findConversation(name);
+            user.delInterestedConvo(convo.id);
           } else {
-            panels.push(createConversationPanel(conversation));
+            System.out.println("ERROR: could not find " + name);
           }
         } else {
-          System.out.println("ERROR: Missing <title>");
+          System.out.println("ERROR: Missing <conversation name>");
+        }
+      }
+
+      public ConversationHeader findConversation(String convoName) {
+        try {
+          Iterator<ConversationHeader> it = user.view.getConversations().iterator();
+          while (it.hasNext()) {
+            ConversationHeader curr = it.next();
+            if (curr.title.equalsIgnoreCase(convoName)) {
+              return curr;
+            }
+          }
+        }
+        catch (Exception e) {
+          System.out.println(e);
+        }
+
+        return null;
+      }
+
+
+      });
+
+    panel.register("c-status-update-user", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if ()
+          HashSet<String> updatedConvos = user.getUpdatedConvos();
+          for (String convoTitle : updatedConvos) {
+            System.out.println(convoTitle);
+          }
+        }
+        else {
+          System.out.println("ERROR: Missing <username>");
         }
       }
     });
