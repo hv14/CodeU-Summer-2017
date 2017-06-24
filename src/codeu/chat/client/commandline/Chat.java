@@ -110,24 +110,6 @@ public final class Chat {
         System.out.println("    Add a new user with the given name.");
         System.out.println("  u-sign-in <name>");
         System.out.println("    Sign in as the user with the given name.");
-
-        System.out.println("  update-status-user <username>");
-        System.out.println("    Check to see what conversation this user has started and how many messages they've sent");
-
-        System.out.println("  update-status-conversation <conversation-name>");
-        System.out.println("    Check to see how many messages have been added to this conversation");
-
-        System.out.println("  interested-user <username>");
-        System.out.println("    Change you interest about this user to a positive value");
-
-        System.out.println("  uninterested-user <username>");
-        System.out.println("    Change you interest about this user to a negative value");
-
-        System.out.println("  interested-conversation <conversation>");
-        System.out.println("    Change you interest about this conversation to a positive value");
-
-        System.out.println("  uninterested-conversation <conversation>");
-        System.out.println("    Change you interest about this conversation to a negative value");
         System.out.println("  exit");
         System.out.println("    Exit the program.");
       }
@@ -338,6 +320,14 @@ public final class Chat {
         System.out.println("    Add a new conversation with the given title and join it as the current user.");
         System.out.println("  c-join <title>");
         System.out.println("    Join the conversation as the current user.");
+        System.out.println("  c-list-interested-users");
+        System.out.println("    List all of the users you are following.");
+        System.out.println("  c-list-interested-convos");
+        System.out.println("    List all of the convos you are following.");
+        System.out.println("  c-add-interested-user <username>");
+        System.out.println("    Add a user to follow.");
+        System.out.println("  c-add-interested-convo <convo name>");
+        System.out.println("    Add a convo to follow.");
         System.out.println("  info");
         System.out.println("    Display all info for the current user");
         System.out.println("  back");
@@ -395,7 +385,7 @@ public final class Chat {
       }
     });
 
-    panel.register("c-list-interested-convo", new Panel.Command() {
+    panel.register("c-list-interested-convos", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
         for (Uuid convoId : user.listInterestedConvos()) {
@@ -474,6 +464,24 @@ public final class Chat {
         return null;
       }
     });
+
+    panel.register("c-update-interested-users", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          final ConversationContext conversation = user.start(name);
+          if (conversation == null) {
+            System.out.println("ERROR: Failed to create new conversation");
+          } else {
+            panels.push(createConversationPanel(conversation));
+          }
+        } else {
+          System.out.println("ERROR: Missing <title>");
+        }
+      }
+    });
+
 
     // C-JOIN (join conversation)
     //
