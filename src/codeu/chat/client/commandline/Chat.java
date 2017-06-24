@@ -402,7 +402,6 @@ public final class Chat {
         }
       }
 
-
       public User findOtherUser(String name) {
         Iterator<User> it = user.view.getUsers().iterator();
         while (it.hasNext()) {
@@ -414,6 +413,24 @@ public final class Chat {
         return null;
       }
 
+    });
+
+    panel.register("c-del-interested-user", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (findOtherUser(name) != null) {
+            User otherUser = findOtherUser(name);
+            user.delInterestedUser(otherUser.id);
+          }
+          else {
+            System.out.println("ERROR: could not find " + name);
+          }
+        } else {
+          System.out.println("ERROR: Missing <username>");
+        }
+      }
     });
 
     panel.register("c-add-interested-convo", new Panel.Command() {
@@ -444,6 +461,23 @@ public final class Chat {
         return null;
       }
     });
+
+    panel.register("c-del-interested-convo", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (findConversation(name) != null) {
+            ConversationHeader convo = findConversation(name);
+            user.delInterestedConvo(convo.id);
+          }
+          else {
+            System.out.println("ERROR: could not find " + name);
+          }
+        } else {
+          System.out.println("ERROR: Missing <conversation name>");
+        }
+      });
 
     // C-JOIN (join conversation)
     //

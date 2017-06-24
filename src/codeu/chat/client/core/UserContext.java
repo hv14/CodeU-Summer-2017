@@ -40,10 +40,17 @@ public final class UserContext {
     user.interestedUsers.add(otherUserId);
   }
 
+  public void delInterestedUser(Uuid otherUserId) {
+    user.interestedUsers.remove(otherUserId);
+  }
+
   public void addInterestedConvo(Uuid convoId) {
     user.interestedConvos.add(convoId);
   }
 
+  public void delInterestedConvo(Uuid convoId) {
+    user.interestedConvos.remove(convoId);
+  }
 
   public ConversationContext start(String name) {
     final ConversationHeader conversation = controller.newConversation(name, user.id);
