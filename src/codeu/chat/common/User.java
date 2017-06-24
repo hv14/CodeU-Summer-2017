@@ -30,8 +30,8 @@ public final class User {
   //first table : key = title of convo, value = true/false depending on interestConvos
   //second table: key = user, value = true/false depending on interestConvos
   // third table: key = convo title, value = the last time update was called
-  public static final Hashtable interestConvos =  new Hashtable();
-  public static final Hashtable interestUsers =  new Hashtable();
+  public static final Set interestConvos =  new HashSet();
+  public static final Set interestUsers =  new HashSet();
   public static final Hashtable lastUpdateConvos = new Hashtable();
   public static final Hashtable lastUpdateUsers = new Hashtables();
 
@@ -40,8 +40,28 @@ public final class User {
         interestConvos.put(title, True);
     }
 
+    public void setlastUpdateConvos(UUID titleID, long time){
+      return lastUpdateConvos(title, time);
+    }
+    public void setlastUpdateUsers(UUID nameID, Long time){
+      return interestUsers.add(nameID, time);
+    }
+    public Set getInterestConvos(){
+      return interestedConvo;
+    }
+    public Set getInterestUsers(){
+      return interestedUsers;
+    }
+
+    public Hashtable getLastUpdateConvos(){
+      return lastUpdateConvos;
+    }
+    public Hashtable getLastUpdateUsers(){
+      return lastUpdateUsers;
+    }
+
     public void interestedConvo(String title){
-      interestConvos.put(title, True);
+      interestConvos.add(title);
     }
 
     public void uninterestedConvo(String Title){
@@ -49,7 +69,7 @@ public final class User {
     }
 
     public void interestedUser(String title){
-      interestUsers.put(title, True);
+      interestUsers.add(title);
     }
 
     public void uninterestedUser(String Title){

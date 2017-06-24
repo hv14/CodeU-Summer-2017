@@ -111,29 +111,23 @@ public final class Chat {
         System.out.println("  u-sign-in <name>");
         System.out.println("    Sign in as the user with the given name.");
 
-        System.out.println("  update-status-user <user>");
-        System.out.println("    Check to see what conversation this user has \
-        started and how many messages they've sent");
+        System.out.println("  update-status-user <username>");
+        System.out.println("    Check to see what conversation this user has started and how many messages they've sent");
 
-        System.out.println("  update-status-conversation <conversation name>");
-        System.out.println("    Check to see how many messages have been added \
-        to this conversation");
+        System.out.println("  update-status-conversation <conversation-name>");
+        System.out.println("    Check to see how many messages have been added to this conversation");
 
-        System.out.println("  interested-user <user>");
-        System.out.println("    Change you interest about this user to a \
-        positive value");
+        System.out.println("  interested-user <username>");
+        System.out.println("    Change you interest about this user to a positive value");
 
-        System.out.println("  uninterested-user <user>");
-        System.out.println("    Change you interest about this user to a \
-        negative value");
+        System.out.println("  uninterested-user <username>");
+        System.out.println("    Change you interest about this user to a negative value");
 
         System.out.println("  interested-conversation <conversation>");
-        System.out.println("    Change you interest about this conversation \
-         to a positive value");
+        System.out.println("    Change you interest about this conversation to a positive value");
 
         System.out.println("  uninterested-conversation <conversation>");
-        System.out.println("    Change you interest about this conversation \
-         to a negative value");
+        System.out.println("    Change you interest about this conversation to a negative value");
         System.out.println("  exit");
         System.out.println("    Exit the program.");
       }
@@ -188,10 +182,9 @@ public final class Chat {
       }
     });
 
-   //need to get input for all of these, take from the function above
+//status update for users
     panel.register("update-status-user <username>", new Panel.Command() {
     //Check to see what conversation this user has started and how many messages they've sent
-    //THIS NEEDS TO UPDATE THE TIME
     //need to loop through the log and count new convos and new messages
     //messages specifically from that user
     public void invoke(Scanner args) {
@@ -199,76 +192,91 @@ public final class Chat {
       if (name.length() > 0) {
         if (context.create(name) == null) {
           System.out.println("ERROR: Failed to update user status");
-        }
-        //set current time when status is called here
-        recentUpdate = System.currentTimeMillis();
-        messageCounter = 0;
-        convoCounter = 0;
-        //going to need to loop through the log here
-        //check the time and that the action is being done by that person:
-        //ok so the time of the message needs to by after the time of the message that is saved in the Hashtable
-        // but also before the recent update
-        while( (recentupdate).compare(messageByTime) && (user.lastUpdateUsers(name).compare messagebyTime)name == userById){
-            if(UUID == NEW_MESSAGE_RESPONSE){
-              messageCounter += 1;
-            }
-            else if (UUID == NEW_CONVERSATION_RESPONSE){
-              convoCounter += 1
-            }
-
-          }
-
-        System.out.println("User Status Update: The number of messages is " \
-          + message counter);
-        System.out.println("User Status Update: The number of new conversations is " + convoCounter);
-        User.lastUpdateConvos.put(name, recentUpdate);
-          //set the last time updated to the current called time
-        } else {
+        } else{
+          context.update-status-user(name);
+      } else {
         System.out.println("ERROR: Missing <username>");
         }
-      }
-    });
+    }
+  });
 
+
+//Status update for conversations
     panel.register("update-status-conversation <conversation name>", new Panel.Command() {
     //Check to see how many messages have been added to this conversation
-    //THIS NEEDS TO UPDATE THE TIMe
-    //check ass messages in conversation, not just from one user
     public void invoke(Scanner args) {
       final String name = args.hasNext() ? args.nextLine().trim() : "";
       if (name.length() > 0) {
-          recentUpdate = System.currentTimeMillis();
-          messageCounter = 0;
-          while(recentUpdate.compare(messagebtTime) && messagetime.compare(lastUpdateConvos[name])){
-            //loop through the log based on time
-            messageCounter += 1;
-          }
-          System.out.println("Conversation Status Update: The number of new messages is " + messageCounter);
-
+          context.updateStatusSonversation(name);
       } else {
-        System.out.println("ERROR: Missing <conversation name>");
+          System.out.println("ERROR: Missing <conversation name>");
+        }
       }
-    }
-
     });
 
     panel.register("interested-user <user>", new Panel.Command() {
     //Change you interest about this user to a positive value
-      User.interestedUser(name);
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (context.create(name) == null) {
+            System.out.println("ERROR: Failed make interested");
+          }
+          else{
+            context.interestedUser(name);
+          }
+        } else {
+          System.out.println("ERROR: Missing <username>");
+        }
+      }
     });
 
     panel.register("uninterested-user <user>", new Panel.Command() {
     // Change you interest about this user to a negative value
-      User.uninterestedUser(name);
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (context.create(name) == null) {
+            System.out.println("ERROR: Failed make uninterested");
+          }
+          else{
+            context.uninterestedUser(name);
+          }
+        } else {
+          System.out.println("ERROR: Missing <username>");
+        }
+      }
     });
 
     panel.register("interested-conversation <conversation>", new Panel.Command() {
     //Change you interest about this conversation to a positive value
-      User.interestedConvo(title);
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (context.create(name) == null) {
+            System.out.println("ERROR: Failed make interested");
+          }
+          else{
+            context.interestedConvo(title);
+          }
+        } else {
+          System.out.println("ERROR: Missing <conversation>");
+        }
+      }
     });
 
     panel.register("uninterested-conversation <conversation>", new Panel.Command() {
     // Change you interest about this conversation to a negative value
-      User.uninterestedConvo(title);
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (context.create(name) == null) {
+            System.out.println("ERROR: Failed make uninterested");
+          }
+          else{
+            context.uninterestedConvo(title);
+          }
+        } else {
+          System.out.println("ERROR: Missing <conversation>");
+        }
+      }
     });
 
     // U-SIGN-IN (sign in user)
@@ -296,7 +304,7 @@ public final class Chat {
       // for that user. If no user is found, the function will return null.
       private UserContext findUser(String name) {
         for (final UserContext user : context.allUsers()) {
-          if (user.user.name.equals(name)) {
+          if (user.name.equals(name)) {
             return user;
           }
         }
