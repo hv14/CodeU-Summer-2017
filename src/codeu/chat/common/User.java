@@ -30,12 +30,44 @@ public final class User {
   //first table : key = title of convo, value = true/false depending on interestConvos
   //second table: key = user, value = true/false depending on interestConvos
   // third table: key = convo title, value = the last time update was called
-  public static final Set interestConvos =  new HashSet();
-  public static final Set interestUsers =  new HashSet();
-  public static final Hashtable lastUpdateConvos = new Hashtable();
-  public static final Hashtable lastUpdateUsers = new Hashtables();
 
-  public static final Hash
+    @Override
+    public void write(OutputStream out, User value) throws IOException {
+
+      Uuid.SERIALIZER.write(out, value.id);
+      Serializers.STRING.write(out, value.name);
+      Time.SERIALIZER.write(out, value.creation);
+
+    }
+
+    @Override
+    public User read(InputStream in) throws IOException {
+
+      return new User(
+          Uuid.SERIALIZER.read(in),
+          Serializers.STRING.read(in),
+          Time.SERIALIZER.read(in)
+      );
+
+    }
+  };
+
+  public final Uuid id;
+  public final String name;
+  public final Time creation;
+
+  public User(Uuid id, String name, Time creation) {
+
+    this.id = id;
+    this.name = name;
+    this.creation = creation;
+
+  }
+  public HashSet<UUID> interestConvos =  new HashSet<>();
+  public HashSet<UUID> interestUsers =  new HashSet<>();
+  public Hashtable lastUpdateConvos = new Hashtable();
+  public Hashtable lastUpdateUsers = new Hashtables();
+
     public void setHashTable(String title){
         interestConvos.put(title, True);
     }
@@ -75,37 +107,4 @@ public final class User {
     public void uninterestedUser(String title){
       interestUsers.put(title, False);
     }
-
-    @Override
-    public void write(OutputStream out, User value) throws IOException {
-
-      Uuid.SERIALIZER.write(out, value.id);
-      Serializers.STRING.write(out, value.name);
-      Time.SERIALIZER.write(out, value.creation);
-
-    }
-
-    @Override
-    public User read(InputStream in) throws IOException {
-
-      return new User(
-          Uuid.SERIALIZER.read(in),
-          Serializers.STRING.read(in),
-          Time.SERIALIZER.read(in)
-      );
-
-    }
-  };
-
-  public final Uuid id;
-  public final String name;
-  public final Time creation;
-
-  public User(Uuid id, String name, Time creation) {
-
-    this.id = id;
-    this.name = name;
-    this.creation = creation;
-
-  }
 }

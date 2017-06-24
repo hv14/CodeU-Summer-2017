@@ -110,24 +110,6 @@ public final class Chat {
         System.out.println("    Add a new user with the given name.");
         System.out.println("  u-sign-in <name>");
         System.out.println("    Sign in as the user with the given name.");
-
-        System.out.println("  update-status-user <username>");
-        System.out.println("    Check to see what conversation this user has started and how many messages they've sent");
-
-        System.out.println("  update-status-conversation <conversation-name>");
-        System.out.println("    Check to see how many messages have been added to this conversation");
-
-        System.out.println("  interested-user <username>");
-        System.out.println("    Change you interest about this user to a positive value");
-
-        System.out.println("  uninterested-user <username>");
-        System.out.println("    Change you interest about this user to a negative value");
-
-        System.out.println("  interested-conversation <conversation>");
-        System.out.println("    Change you interest about this conversation to a positive value");
-
-        System.out.println("  uninterested-conversation <conversation>");
-        System.out.println("    Change you interest about this conversation to a negative value");
         System.out.println("  exit");
         System.out.println("    Exit the program.");
       }
@@ -178,103 +160,6 @@ public final class Chat {
         } else {
           System.out.println("Server Version: " + info.version);
          // Print the server info to the user in a pretty way
-        }
-      }
-    });
-
-//status update for users
-    panel.register("update-status-user <username>", new Panel.Command() {
-    //Check to see what conversation this user has started and how many messages they've sent
-    //need to loop through the log and count new convos and new messages
-    //messages specifically from that user
-    public void invoke(Scanner args) {
-      final String name = args.hasNext() ? args.nextLine().trim() : "";
-      if (name.length() > 0) {
-        if (context.create(name) == null) {
-          System.out.println("ERROR: Failed to update user status");
-        } else{
-          context.update-status-user(name);
-      } else {
-        System.out.println("ERROR: Missing <username>");
-        }
-    }
-  });
-
-
-//Status update for conversations
-    panel.register("update-status-conversation <conversation name>", new Panel.Command() {
-    //Check to see how many messages have been added to this conversation
-    public void invoke(Scanner args) {
-      final String name = args.hasNext() ? args.nextLine().trim() : "";
-      if (name.length() > 0) {
-          context.updateStatusSonversation(name);
-      } else {
-          System.out.println("ERROR: Missing <conversation name>");
-        }
-      }
-    });
-
-    panel.register("interested-user <user>", new Panel.Command() {
-    //Change you interest about this user to a positive value
-      public void invoke(Scanner args) {
-        final String name = args.hasNext() ? args.nextLine().trim() : "";
-        if (name.length() > 0) {
-          if (context.create(name) == null) {
-            System.out.println("ERROR: Failed make interested");
-          }
-          else{
-            context.interestedUser(name);
-          }
-        } else {
-          System.out.println("ERROR: Missing <username>");
-        }
-      }
-    });
-
-    panel.register("uninterested-user <user>", new Panel.Command() {
-    // Change you interest about this user to a negative value
-        final String name = args.hasNext() ? args.nextLine().trim() : "";
-        if (name.length() > 0) {
-          if (context.create(name) == null) {
-            System.out.println("ERROR: Failed make uninterested");
-          }
-          else{
-            context.uninterestedUser(name);
-          }
-        } else {
-          System.out.println("ERROR: Missing <username>");
-        }
-      }
-    });
-
-    panel.register("interested-conversation <conversation>", new Panel.Command() {
-    //Change you interest about this conversation to a positive value
-        final String name = args.hasNext() ? args.nextLine().trim() : "";
-        if (name.length() > 0) {
-          if (context.create(name) == null) {
-            System.out.println("ERROR: Failed make interested");
-          }
-          else{
-            context.interestedConvo(title);
-          }
-        } else {
-          System.out.println("ERROR: Missing <conversation>");
-        }
-      }
-    });
-
-    panel.register("uninterested-conversation <conversation>", new Panel.Command() {
-    // Change you interest about this conversation to a negative value
-        final String name = args.hasNext() ? args.nextLine().trim() : "";
-        if (name.length() > 0) {
-          if (context.create(name) == null) {
-            System.out.println("ERROR: Failed make uninterested");
-          }
-          else{
-            context.uninterestedConvo(title);
-          }
-        } else {
-          System.out.println("ERROR: Missing <conversation>");
         }
       }
     });
@@ -340,6 +225,23 @@ public final class Chat {
         System.out.println("    Display all info for the current user");
         System.out.println("  back");
         System.out.println("    Go back to ROOT MODE.");
+        System.out.println("  update-status-user <username>");
+        System.out.println("    Check to see what conversation this user has started and how many messages they've sent");
+
+        System.out.println("  update-status-conversation <conversation-name>");
+        System.out.println("    Check to see how many messages have been added to this conversation");
+
+        System.out.println("  interested-user <username>");
+        System.out.println("    Change you interest about this user to a positive value");
+
+        System.out.println("  uninterested-user <username>");
+        System.out.println("    Change you interest about this user to a negative value");
+
+        System.out.println("  interested-conversation <conversation>");
+        System.out.println("    Change you interest about this conversation to a positive value");
+
+        System.out.println("  uninterested-conversation <conversation>");
+        System.out.println("    Change you interest about this conversation to a negative value");
         System.out.println("  exit");
         System.out.println("    Exit the program.");
       }
@@ -380,6 +282,126 @@ public final class Chat {
           }
         } else {
           System.out.println("ERROR: Missing <title>");
+        }
+      }
+    });
+
+    //status update for users
+        panel.register("update-status-user <username>", new Panel.Command() {
+        //Check to see what conversation this user has started and how many messages they've sent
+        //need to loop through the log and count new convos and new messages
+        //messages specifically from that user
+        public void invoke(Scanner args) {
+          final String name = args.hasNext() ? args.nextLine().trim() : "";
+          if (name.length() > 0) {
+            if (context.create(name) == null) {
+              System.out.println("ERROR: Failed to update user status");
+            } else{
+               user.updateStatusUser(name);
+               }
+            }
+           else {
+            System.out.println("ERROR: Missing <username>");
+            }
+        }
+      });
+
+
+    //Status update for conversations
+        panel.register("update-status-conversation <conversation name>", new Panel.Command() {
+        //Check to see how many messages have been added to this conversation
+        public void invoke(Scanner args) {
+          final String name = args.hasNext() ? args.nextLine().trim() : "";
+          if (name.length() > 0) {
+              user.updateStatusConvo(name);
+          } else {
+              System.out.println("ERROR: Missing <conversation name>");
+            }
+          }
+        });
+
+        panel.register("interested-user <user>", new Panel.Command() {
+        //Change you interest about this user to a positive value
+          public void invoke(Scanner args) {
+            final String name = args.hasNext() ? args.nextLine().trim() : "";
+            if (name.length() > 0) {
+              if (context.create(name) == null) {
+                System.out.println("ERROR: Failed make interested");
+              }
+              else{
+                user.interestedUser(name);
+              }
+            } else {
+              System.out.println("ERROR: Missing <username>");
+            }
+          }
+        });
+
+        panel.register("uninterested-user <user>", new Panel.Command() {
+        // Change you interest about this user to a negative value
+        public void invoke(Scanner args) {
+            final String name = args.hasNext() ? args.nextLine().trim() : "";
+            if (name.length() > 0) {
+              if (context.create(name) == null) {
+                System.out.println("ERROR: Failed make uninterested");
+              }
+              else{
+                user.uninterestedUser(name);
+              }
+            } else {
+              System.out.println("ERROR: Missing <username>");
+            }
+          }
+        });
+
+        panel.register("interested-conversation <conversation>", new Panel.Command() {
+        //Change you interest about this conversation to a positive value
+        public void invoke(Scanner args) {
+            final String name = args.hasNext() ? args.nextLine().trim() : "";
+            if (name.length() > 0) {
+              if (context.create(name) == null) {
+                System.out.println("ERROR: Failed make interested");
+              }
+              else{
+                user.interestedConvo(title);
+              }
+            } else {
+              System.out.println("ERROR: Missing <conversation>");
+            }
+          }
+        });
+
+        panel.register("uninterested-conversation <conversation>", new Panel.Command() {
+        // Change you interest about this conversation to a negative value
+        public void invoke(Scanner args) {
+            final String name = args.hasNext() ? args.nextLine().trim() : "";
+            if (name.length() > 0) {
+              if (context.create(name) == null) {
+                System.out.println("ERROR: Failed make uninterested");
+              }
+              else{
+                user.uninterestedConvo(title);
+              }
+            } else {
+              System.out.println("ERROR: Missing <conversation>");
+            }
+          }
+        });
+
+
+    // M-ADD (add message)
+    //
+    // Add a command to add a new message to the current conversation when the
+    // user enters "m-add" while on the conversation panel.
+    //
+    panel.register("m-add", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String message = args.hasNext() ? args.nextLine().trim() : "";
+        if (message.length() > 0) {
+          conversation.add(message);
+        } else {
+          System.out.println("ERROR: Messages must contain text");
         }
       }
     });
@@ -483,23 +505,6 @@ public final class Chat {
           System.out.println();
         }
         System.out.println("---  end of conversation  ---");
-      }
-    });
-
-    // M-ADD (add message)
-    //
-    // Add a command to add a new message to the current conversation when the
-    // user enters "m-add" while on the conversation panel.
-    //
-    panel.register("m-add", new Panel.Command() {
-      @Override
-      public void invoke(Scanner args) {
-        final String message = args.hasNext() ? args.nextLine().trim() : "";
-        if (message.length() > 0) {
-          conversation.add(message);
-        } else {
-          System.out.println("ERROR: Messages must contain text");
-        }
       }
     });
 

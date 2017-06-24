@@ -53,4 +53,124 @@ public final class UserContext {
 
     return all;
   }
+  public void statusUpdateUsers(String username){
+      //set current time when status is called here
+      Time recentUpdate = Time.now();
+      int messageCounter = 0;
+      int convoCounter = 0;
+      Collection allConversations;
+      Collection allUsers;
+      Collection allMessages;
+
+      //Need to ask Chris about this??
+      //loop through users and find the one we want based on name
+      //nope this isn't right, I am the user I want to calling this on
+      //halp confused
+      User user;
+      allUsers = view.getUsers();
+      for (User guess : allUsers){
+        if(guess.name == username){
+          user = guess;
+        }
+      }
+      long previousUpdate = user.getLastUpdateUsers[name];
+      allConversations = view.getConversations();
+      for(Conversation convo : allConversations){
+        if(convo.owner == username){
+          if(previousUpdate.compareTo(mess.creation) < 0 && mess.creation.compareTo(recentUpdate) < 0){
+            convoCounter += 1;
+          }
+        }
+      }
+      //how to make sure its only counting the number of conversations
+      //they have added messages to.
+      allMessages = view.getMessages();
+      for(Message mess : allMessages){
+        if(mess.id == user.id){
+          //a value less than 0 if this Time is before the Time argument;
+          // and a value greater than 0 if this Time is after the Time argument.
+          if(previousUpdate.compareTo(mess.creation) < 0 && mess.creation.compareTo(recentUpdate) < 0){
+            messageCounter += 1;
+          }
+        }
+      }
+      System.out.println("User Status Update: The number of conversations they have added messages to is " + messageCounter);
+      System.out.println("User Status Update: The number of new conversations they have created is " + convoCounter);
+      //set the last time updated to the current called time
+      user.setlastUpdateUsers(user.id, recentUpdate);
+    }
+
+    public void statusUpdateConvos(String name){
+      Time recentUpdate = Time.now();
+      int messageCounter = 0;
+      int previousUpdate = user.lastUpdateConvos[name];
+      Collection allConversation;
+      Collection allMessages;
+      Conversation interestedConvo;
+
+      allConversation = view.getConversations();
+      allMessages = view.getMessages();
+      for(Conversation convo : allConversations){
+        if(convo.title == name){
+            interestedConvo = convo;
+        }
+      }
+      allMessages = view.getMessages();
+      for(Message mess : allMessages){
+        if(mess.id == user.id){
+          if(previousUpdate.compareTo(mess.creation) < 0 && mess.creation.compareTo(recentUpdate) < 0){
+            if(mess.convoId == interestedConvo.id){
+              messageCounter += 1;
+            }
+          }
+        }
+      }
+
+      System.out.println("Conversation Status Update: The number of new messages is " + messageCounter);
+      user.lastUpdateConvos.put(interestConvo.id,recentUpdate);
+    }
+
+    public void interestedUser(String name){
+      Collection allUsers = view.getUsers();
+      for(User guess : allUsers){
+        if(guess.name == name){
+          user = guess;
+        }
+      }
+      user.interestedUser(user.id);
+    }
+
+    public void uninterestedUser(String name){
+      Collection allUsers = view.getUsers();
+      for(User guess : allUsers){
+        if(guess.name == name){
+          user = guess;
+        }
+      }
+      user.uninterestedUser(user.id);
+    }
+
+    public void interestedConvo(String name){
+      Collection allConversations = view.getConversations();
+      Conversation convo;
+      for(Conversation guess : allConversations){
+        if (guess.title == name){
+          convo = guess;
+        }
+      }
+      user.interestedConvo(convo.id);
+    }
+    public void uninterestedConvo(String name){
+      Collection allConversations = view.getConversations();
+      Conversation convo;
+      for(Conversation guess : allConversations){
+        if (guess.title == name){
+          convo = guess;
+        }
+      }
+      user.uninterestedConvo(convo.id);
+    }
+
+
+
 }

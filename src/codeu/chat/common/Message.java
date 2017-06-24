@@ -59,9 +59,10 @@ public final class Message {
   public final Time creation;
   public final Uuid author;
   public final String content;
+  public final UUID convoId;
   public Uuid next;
 
-  public Message(Uuid id, Uuid next, Uuid previous, Time creation, Uuid author, String content) {
+  public Message(Uuid id, Uuid next, Uuid previous, Time creation, Uuid author, String content, UUID convoId) {
 
     this.id = id;
     this.next = next;
@@ -69,6 +70,7 @@ public final class Message {
     this.creation = creation;
     this.author = author;
     this.content = content;
+    this.convoId = convoId;
 
   }
 }
