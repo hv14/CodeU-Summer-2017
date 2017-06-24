@@ -462,6 +462,7 @@ public final class Chat {
       }
     });
 
+   
     panel.register("c-del-interested-convo", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {

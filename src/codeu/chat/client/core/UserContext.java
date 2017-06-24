@@ -38,7 +38,7 @@ public final class UserContext {
 
   public void addInterestedUser(Uuid otherUserId) {
     user.interestedUsers.add(otherUserId);
-  }
+  } 
 
   public void delInterestedUser(Uuid otherUserId) {
     user.interestedUsers.remove(otherUserId);
