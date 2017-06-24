@@ -431,6 +431,17 @@ public final class Chat {
           System.out.println("ERROR: Missing <username>");
         }
       }
+      
+      public User findOtherUser(String name) {
+        Iterator<User> it = user.view.getUsers().iterator();
+        while (it.hasNext()) {
+          if (it.next().name.equalsIgnoreCase(name)) {
+            return it.next();
+          }
+        }
+
+        return null;
+      }
     });
 
     panel.register("c-add-interested-convo", new Panel.Command() {
@@ -462,7 +473,7 @@ public final class Chat {
       }
     });
 
-   
+
     panel.register("c-del-interested-convo", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
@@ -477,6 +488,17 @@ public final class Chat {
           }
         } else {
           System.out.println("ERROR: Missing <conversation name>");
+        }
+
+        public ConversationHeader findConversation(String convoName) {
+         Iterator<ConversationHeader> it = user.view.getConversations().iterator();
+         while (it.hasNext()) {
+           if (it.next().title.equalsIgnoreCase(convoName)) {
+              return it.next();
+           }
+         }
+
+         return null;
         }
       });
 
