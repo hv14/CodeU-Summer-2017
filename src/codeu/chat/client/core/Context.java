@@ -56,7 +56,7 @@ public final class Context {
 
   public void statusUpdateUsers(String username){
       //set current time when status is called here
-      long recentUpdate = System.currentTimeMillis();
+      Time recentUpdate = Time.now();
       int messageCounter = 0;
       int convoCounter = 0;
       Collection allConversations;
@@ -78,7 +78,7 @@ public final class Context {
       allConversations = view.getConversations();
       for(Conversation convo : allConversations){
         if(convo.owner == username){
-          if(previousUpdate<convo.creation && convo.creation < recentUpdate){
+          if(previousUpdate.compareTo(mess.creation) < 0 && mess.creation.compareTo(recentUpdate) < 0){
             convoCounter += 1;
           }
         }
@@ -88,7 +88,9 @@ public final class Context {
       allMessages = view.getMessages();
       for(Message mess : allMessages){
         if(mess.id == user.id){
-          if(previousUpdate<mess.creation && mess.creation < recentUpdate){
+          //a value less than 0 if this Time is before the Time argument;
+          // and a value greater than 0 if this Time is after the Time argument.
+          if(previousUpdate.compareTo(mess.creation) < 0 && mess.creation.compareTo(recentUpdate) < 0){
             messageCounter += 1;
           }
         }
@@ -100,7 +102,7 @@ public final class Context {
     }
 
     public void statusUpdateConvos(String name){
-      long recentUpdate = System.currentTimeMillis();
+      Time recentUpdate = Time.now();
       int messageCounter = 0;
       int previousUpdate = user.lastUpdateConvos[name];
       Collection allConversation;
@@ -118,7 +120,7 @@ public final class Context {
       allMessages = view.getMessages();
       for(Message mess : allMessages){
         if(mess.id == user.id){
-          if(previousUpdate<mess.creation && mess.creation < recentUpdate){
+          if(previousUpdate.compareTo(mess.creation) < 0 && mess.creation.compareTo(recentUpdate) < 0){
             messageCounter += 1;
           }
         }

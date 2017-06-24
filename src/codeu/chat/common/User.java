@@ -64,7 +64,7 @@ public final class User {
       interestConvos.add(title);
     }
 
-    public void uninterestedConvo(String Title){
+    public void uninterestedConvo(String title){
       interestConvos.remove(title);
     }
 
@@ -72,7 +72,7 @@ public final class User {
       interestUsers.add(title);
     }
 
-    public void uninterestedUser(String Title){
+    public void uninterestedUser(String title){
       interestUsers.put(title, False);
     }
 
