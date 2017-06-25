@@ -11,8 +11,8 @@ import java.io.FileWriter;
  */
 public class Json {
 
-    //When running on your own machine change this file path to where you are storing your textfiles.
-    //It is best to save them in the project folder
+    // When running on your own machine change this file path to where you are storing your textfiles.
+    // It is best to save them in the project folder
     private static final String STORAGE_FILES_PATH = "/Users/hv58535/CodeU-Summer-2017/";
 
     public String read(String fileName) {
@@ -20,22 +20,20 @@ public class Json {
             String fullFilePath = STORAGE_FILES_PATH + fileName;
 
             File savedData = new File(fullFilePath);
-            FileReader fr = new FileReader(savedData);
-            BufferedReader br = new BufferedReader(fr);
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
+            FileReader fileReader = new FileReader(savedData);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line = bufferedReader.readLine();
 
             while (line != null) {
-                sb.append(line);
-                line = br.readLine();
+                stringBuilder.append(line);
+                line = bufferedReader.readLine();
             }
 
-            String jsonData = sb.toString();
+            String jsonData = stringBuilder.toString();
 
-            System.out.println(jsonData);
-
-            fr.close();
-            br.close();
+            fileReader.close();
+            bufferedReader.close();
 
             return jsonData;
         }

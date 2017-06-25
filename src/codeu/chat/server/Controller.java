@@ -32,15 +32,12 @@ public final class Controller implements RawController, BasicController {
   private final Model model;
   private final Uuid.Generator uuidGenerator;
 
-  public ArrayList<Message> currentMessages = new ArrayList<>();
-
-
   public Controller(Uuid serverId, Model model) {
     this.model = model;
     this.uuidGenerator = new RandomUuidGenerator(serverId, System.currentTimeMillis());
   }
 
-  //Used to load the saved messages
+  // Used to load the saved messages
   public void refreshData() {
     Gson gson = new Gson();
     Json json = new Json();
