@@ -54,16 +54,24 @@ public final class User {
   public final Uuid id;
   public final String name;
   public final Time creation;
-  public HashSet<Uuid> interestedConvos = new HashSet<>();
-  public HashSet<Uuid> interestedUsers = new HashSet<>();
-  public Time lastUpdateConvos;
-  public Time lastUpdateUsers;
+  public Set<Uuid> interestedConvos = new HashSet<>();
+  public Set<Uuid> interestedUsers = new HashSet<>();
+  private Time lastUpdateConvos;
+  private Time lastUpdateUsers;
 
   public Time getLastUpdateConvos(){
     return lastUpdateConvos;
   }
   public Time getLastUpdateUsers() {
     return lastUpdateUsers;
+  }
+
+  public void setLastUpdateConvos(Time lastUpdateConvos) {
+    this.lastUpdateConvos = lastUpdateConvos;
+  }
+
+  public void setLastUpdateUsers(Time lastUpdateUsers) {
+    this.lastUpdateUsers = lastUpdateUsers;
   }
 
   public User(Uuid id, String name, Time creation) {

@@ -49,11 +49,11 @@ public final class UserContext {
     user.interestedConvos.remove(convoId);
   }
 
-  public HashSet<Uuid> listInterestedUsers() {
+  public Set<Uuid> listInterestedUsers() {
     return user.interestedUsers;
   }
 
-  public HashSet<Uuid> listInterestedConvos() {
+  public Set<Uuid> listInterestedConvos() {
     return user.interestedConvos;
   }
 
@@ -66,7 +66,7 @@ public final class UserContext {
   }
 
 
-    public HashSet<String> getUpdatedConvosForUser(Uuid otherUserId){
+  public HashSet<String> getUpdatedConvosForUser(Uuid otherUserId){
     //set current time when status is called here
     Time recentUpdate = Time.now();
 
@@ -94,7 +94,7 @@ public final class UserContext {
         }
       }
     }
-    user.lastUpdateConvos = recentUpdate;
+    user.setLastUpdateUsers(recentUpdate);
 
     return updatedConvos;
   }
@@ -148,6 +148,8 @@ public final class UserContext {
         }
       }
 
+
+    user.setLastUpdateConvos(recentUpdate);
 
     return updatedMessages;
   }
