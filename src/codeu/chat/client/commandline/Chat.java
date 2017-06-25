@@ -17,6 +17,7 @@ package codeu.chat.client.commandline;
 import java.util.*;
 
 import codeu.chat.common.ConversationHeader;
+import codeu.chat.common.Message;
 import codeu.chat.common.ServerInfo;
 import codeu.chat.client.core.Context;
 import codeu.chat.client.core.ConversationContext;
@@ -328,8 +329,10 @@ public final class Chat {
         System.out.println("    Add a user to follow.");
         System.out.println("  c-add-interested-convo <convo name>");
         System.out.println("    Add a convo to follow.");
-        System.out.println("  c-status-update-convos");
-        System.out.println("    Get a status update of the conversations you are following.");
+        System.out.println("  c-status-update-user <username>");
+        System.out.println("    Get a status update of the user you are following.");
+        System.out.println("  c-status-update-conversation <convo name>");
+        System.out.println("    Get a status update of the conversation you are following.");
         System.out.println("  info");
         System.out.println("    Display all info for the current user");
         System.out.println("  back");
@@ -545,17 +548,81 @@ public final class Chat {
       public void invoke(Scanner args) {
         final String name = args.hasNext() ? args.nextLine().trim() : "";
         if (name.length() > 0) {
-          if ()
-          HashSet<String> updatedConvos = user.getUpdatedConvos();
-          for (String convoTitle : updatedConvos) {
-            System.out.println(convoTitle);
+          User otherUser = findOtherUser(name);
+          if (otherUser != null) {
+            if (user.checkIfInterestedUser(otherUser.id)) {
+              HashSet<String> updatedConvos = user.getUpdatedConvosForUser(otherUser.id);
+              for (String convoTitle : updatedConvos) {
+                System.out.println(convoTitle);
+              }
+            }
+            else {
+              System.out.println("ERROR: you are not following " + name);
+            }
           }
         }
         else {
           System.out.println("ERROR: Missing <username>");
         }
       }
+
+      public User findOtherUser(String name) {
+        try {
+          Iterator<User> it = user.view.getUsers().iterator();
+          while (it.hasNext()) {
+            User curr = it.next();
+            if (curr.name.equalsIgnoreCase(name)) {
+              return curr;
+            }
+          }
+        }
+        catch (Exception e) {
+          System.out.println(e);
+        }
+
+        return null;
+      }
     });
+
+    panel.register("c-status-update-conversation", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          ConversationHeader convo = findConversation(name);
+          if (convo != null) {
+            if (user.checkIfInterestedConvo(convo.id)) {
+              ArrayList<Message> msgs = user.getUpdatedMessages(convo);
+              System.out.println(msgs.size() + " message(s) have been added since last update");
+            }
+            else {
+              System.out.println("ERROR: you are not following " + name);
+            }
+          }
+        }
+        else {
+          System.out.println("ERROR: Missing <conversation>");
+        }
+      }
+
+      public ConversationHeader findConversation(String convoName) {
+        try {
+          Iterator<ConversationHeader> it = user.view.getConversations().iterator();
+          while (it.hasNext()) {
+            ConversationHeader curr = it.next();
+            if (curr.title.equalsIgnoreCase(convoName)) {
+              return curr;
+            }
+          }
+        }
+        catch (Exception e) {
+          System.out.println(e);
+        }
+
+        return null;
+      }
+    });
+
 
 
     // C-JOIN (join conversation)

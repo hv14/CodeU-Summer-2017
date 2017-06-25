@@ -14,6 +14,7 @@
 
 package codeu.chat.client.core;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import codeu.chat.common.*;
@@ -56,34 +57,34 @@ public final class UserContext {
     return user.interestedConvos;
   }
 
-  public Uuid getInterestedUser(Uuid otherUserId) {
-
-  }
-
   public boolean checkIfInterestedUser(Uuid otherUserId) {
     return user.interestedUsers.contains(otherUserId);
   }
 
+  public boolean checkIfInterestedConvo(Uuid convoId) {
+    return user.interestedConvos.contains(convoId);
+  }
 
-  public HashSet<String> getUpdatedConvos(){
+
+    public HashSet<String> getUpdatedConvosForUser(Uuid otherUserId){
     //set current time when status is called here
     Time recentUpdate = Time.now();
 
     HashSet<String> updatedConvos = new HashSet<>();
 
-    Time previousUpdate = user.getLastUpdateConvos();
+    Time previousUpdate = user.getLastUpdateUsers();
 
     Iterator<ConversationHeader> it = view.getConversations().iterator();
     while (it.hasNext()) {
       ConversationHeader curr = it.next();
-      if (curr.owner.equals(user.id)) {
+      if (curr.owner.equals(otherUserId)) {
         if (curr.creation.inRange(previousUpdate, recentUpdate)) {
           updatedConvos.add(curr.title);
         }
       }
     }
 
-    Iterator<Message> itMsges = view.getMessages(Arrays.asList(user.id)).iterator();
+    Iterator<Message> itMsges = view.getMessages(Arrays.asList(otherUserId)).iterator();
     while (itMsges.hasNext()) {
       Message curr = itMsges.next();
       if (curr.creation.inRange(previousUpdate, recentUpdate)) {
@@ -133,5 +134,24 @@ public final class UserContext {
 
     return all;
   }
+
+  public ArrayList<Message> getUpdatedMessages(ConversationHeader convo) {
+    Time recentUpdate = Time.now();
+    Time previousUpdate = user.getLastUpdateConvos();
+    ArrayList<Message> updatedMessages = new ArrayList<>();
+    ConversationContext convoContext = new ConversationContext(user, convo, view, controller);
+      for (MessageContext message = convoContext.firstMessage();
+           message != null;
+           message = message.next()) {
+        if (message.message.creation.inRange(previousUpdate, recentUpdate)) {
+          updatedMessages.add(message.message);
+        }
+      }
+
+
+    return updatedMessages;
+  }
+
+
 
 }
