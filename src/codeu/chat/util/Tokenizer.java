@@ -1,6 +1,3 @@
-//there are two parts in the next() funtion that I still need to complete
-//I commented in the commented section about this
-
 package codeu.chat.util;
 
 import java.io.IOException;
@@ -39,7 +36,7 @@ public final class Tokenizer {
   public String next() throws IOException {
   
     String tokenCreation;
- // Skip all leading whitespace
+    // Skip all leading whitespace
 
     while (remaining() > 0 && Character.isWhitespace(peek()) ) {
       read();  // ignore the result because we already know that it is a whitespace character
