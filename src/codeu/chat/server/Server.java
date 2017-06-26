@@ -19,7 +19,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
-
+import codeu.chat.common.ServerInfo;
 import codeu.chat.common.*;
 import codeu.chat.util.*;
 import codeu.chat.util.connections.Connection;
