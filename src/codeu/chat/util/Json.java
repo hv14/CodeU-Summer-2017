@@ -13,7 +13,7 @@ public class Json {
 
     // When running on your own machine change this file path to where you are storing your textfiles.
     // It is best to save them in the project folder
-    private static final String STORAGE_FILES_PATH = "/Users/hv58535/CodeU-Summer-2017/";
+    private static final String STORAGE_FILES_PATH = "./";
 
     public String read(String fileName) {
         try {

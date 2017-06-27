@@ -151,9 +151,7 @@ public final class Server {
       public void onMessage(InputStream in, OutputStream out) throws IOException {
 
         final Collection<Uuid> ids = Serializers.collection(Uuid.SERIALIZER).read(in);
-        for (Uuid id: ids) {
-          System.out.println(id);
-        }
+
         final Collection<ConversationPayload> conversations = view.getConversationPayloads(ids);
 
         Serializers.INTEGER.write(out, NetworkCode.GET_CONVERSATIONS_BY_ID_RESPONSE);
@@ -167,15 +165,6 @@ public final class Server {
       public void onMessage(InputStream in, OutputStream out) throws IOException {
 
         final Collection<Uuid> ids = Serializers.collection(Uuid.SERIALIZER).read(in);
-
-        /*final Collection<Uuid> ids = new ArrayList<>();
-        for (Message msg : model.currentMessages) {
-          ids.add(msg.id);
-        }
-
-        for (Uuid id: ids) {
-          System.out.println(id);
-        }*/
 
         final Collection<Message> messages = view.getMessages(ids);
 
