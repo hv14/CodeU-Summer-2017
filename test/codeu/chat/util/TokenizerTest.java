@@ -11,7 +11,7 @@ public final class TokenizerTest{
     assertEquals(tokenizer.next(), null);
   }
   
-  public void testWithNoQuotes throws IOException{
+  public void testWithNoQuotes() throws IOException{
     final Tokenizer tokenizer = new Tokenizer("hello world");
     assertEquals(tokenizer.next(), "hello");
     assertEquals(tokenizer.next(), "world");
