@@ -54,7 +54,7 @@ public final class Chat {
     }
     
     final String command = args.get(0);
-    args.reomve(0);
+    args.remove(0);
 
     // Because "exit" and "back" are applicable to every panel, handle
     // those commands here to avoid having to implement them for each
