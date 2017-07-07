@@ -11,6 +11,7 @@ public final class Tokenizer{
   
   
   public Tokenizer (String source){
+    this.source = source;
   }
   public String next() throws IOException{
     while(remaining() > 0 && Character.isWhitespace(peek())){
