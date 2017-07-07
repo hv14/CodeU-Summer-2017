@@ -17,11 +17,11 @@ public final class Tokenizer{
     while(remaining() > 0 && Character.isWhitespace(peek())){
       read();
     }
-    if(remaining() <= 0){
+    if (remaining() <= 0){
       return null;
-    }else if(peek() == '"'){
+    } else if (peek() == '"'){
     
-    }else{
+    } else {
     
     }
   }
@@ -31,12 +31,12 @@ public final class Tokenizer{
     while(remaining() > 0 && !Character.isWhitespace(peek())){
       token.append(read());
     }
-    return token toString();
+    return token.toString();
   }
   
   private String readWithQuotes() throws IOException{
     token.setLength(0);
-    if(read() != '"'){
+    if (read() != '"'){
       throw new IOException("Strings must start with opening quote"); 
     }
     
@@ -53,9 +53,9 @@ public final class Tokenizer{
   }
   
   private char peek() throws IOException{
-    if(at < source.length()){
+    if (at < source.length()){
       return source.charAt(at);
-    }else{
+    } else {
       
     }
   }
