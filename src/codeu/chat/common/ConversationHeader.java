@@ -23,6 +23,10 @@ import codeu.chat.util.Serializers;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
 
+public enum ACCESSLEVEL{
+  CREATOR, ADMIN, MEMBER
+}
+
 public final class ConversationHeader {
 
   public static final Serializer<ConversationHeader> SERIALIZER = new Serializer<ConversationHeader>() {
@@ -54,6 +58,7 @@ public final class ConversationHeader {
   public final Uuid owner;
   public final Time creation;
   public final String title;
+  public HashMap<Uuid, Enum> memberlevels = new HashMap<>();
 
   public ConversationHeader(Uuid id, Uuid owner, Time creation, String title) {
 
@@ -61,6 +66,37 @@ public final class ConversationHeader {
     this.owner = owner;
     this.creation = creation;
     this.title = title;
+    this.memberlevels = memberlevels;
+    this.memberlevels[owner] = ACCESSLEVEL.CREATOR;
+
+    //need to find the user by name in the command line chat
+    // and then input their Uuid here
+    public void changeRank(Uuid updateUser, ACCESSLEVEL goalLevel){
+
+      //use the name to find the UUID of the person
+      //whos' access we want to change
+      if(this.accessControl[self.UUID] == AccessLevel.ADMIN){
+		    if(goalLevel == AccessLevel.MEMBER){
+          if (context.create(name) == null) {
+            System.out.println("ERROR: Failed to create new user");
+          }
+			    this.accessControl[alteringUUID] = AccessLevel.MEMBER;
+          }
+        }
+	    if(this.accessControl[self.UUID] ==  AccessLevel.CREATOR){
+		    if(goalLevel == AccessLevel.MEMBER){
+          if (context.create(name) == null) {
+            System.out.println("ERROR: Failed to create new user");
+          }
+			    this.accessControl[alteringUUID] = AccessLevel.MEMBER;
+          }
+        if(goalLevel == AccessLevel.ADMIN){
+			    this.accessControl[alteringUUID] = AccessLevel.ADMIN;
+          }
+      }
+    }
+
+
 
   }
 }

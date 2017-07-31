@@ -105,8 +105,6 @@ public final class Chat {
         System.out.println("     Output Server Version.");
         System.out.println("  u-list");
         System.out.println("    List all users.");
-        System.out.println("  u-add <name>");
-        System.out.println("    Add a new user with the given name.");
         System.out.println("  u-sign-in <name>");
         System.out.println("    Sign in as the user with the given name.");
         System.out.println("  info");
@@ -129,25 +127,6 @@ public final class Chat {
               "USER %s (UUID:%s)\n",
               user.user.name,
               user.user.id);
-        }
-      }
-    });
-
-    // U-ADD (add user)
-    //
-    // Add a command to add and sign-in as a new user when the user enters
-    // "u-add" while on the root panel.
-    //
-    panel.register("u-add", new Panel.Command() {
-      @Override
-      public void invoke(Scanner args) {
-        final String name = args.hasNext() ? args.nextLine().trim() : "";
-        if (name.length() > 0) {
-          if (context.create(name) == null) {
-            System.out.println("ERROR: Failed to create new user");
-          }
-        } else {
-          System.out.println("ERROR: Missing <username>");
         }
       }
     });
@@ -221,8 +200,8 @@ public final class Chat {
         System.out.println("    List all conversations that the current user can interact with.");
         System.out.println("  c-add <title>");
         System.out.println("    Add a new conversation with the given title and join it as the current user.");
-        System.out.println("  c-join <title>");
-        System.out.println("    Join the conversation as the current user.");
+        System.out.println("c-change-admin <Username>");
+        System.out.println(     "Changes the status of a user that is already a member of the conversation to an admin");
         System.out.println("  info");
         System.out.println("    Display all info for the current user");
         System.out.println("  back");
@@ -249,48 +228,45 @@ public final class Chat {
       }
     });
 
-    // C-ADD (add conversation)
-    //
-    // Add a command that will create and join a new conversation when the user
-    // enters "c-add" while on the user panel.
-    //
     panel.register("c-add", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
         final String name = args.hasNext() ? args.nextLine().trim() : "";
         if (name.length() > 0) {
-          final ConversationContext conversation = user.start(name);
-          if (conversation == null) {
-            System.out.println("ERROR: Failed to create new conversation");
-          } else {
-            panels.push(createConversationPanel(conversation));
-          }
+          //need to find the name and then find the/
+          //correct Uuid then we pass that and the level we want
+          //in this case always member,  with the
+          //user function, changeRank(Uuid, level)
+          User otherUser = findOtherUser(name);
+          //this syntax is wrong, I should be calling
+          //changeRank on a conversation header.
+          //If I need to find it then I need to add more input
+          //is that going to be a problem??
+          changeRank(otherUser.Uuid ,ACCESSLEVEL.MEMBER)
+
         } else {
-          System.out.println("ERROR: Missing <title>");
+          System.out.println("ERROR: Missing <username>");
         }
       }
     });
 
-    // C-JOIN (join conversation)
-    //
-    // Add a command that will joing a conversation when the user enters
-    // "c-join" while on the user panel.
-    //
-    panel.register("c-join", new Panel.Command() {
+    panel.register("c-change-admin", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
         final String name = args.hasNext() ? args.nextLine().trim() : "";
         if (name.length() > 0) {
-          final ConversationContext conversation = find(name);
-          if (conversation == null) {
-            System.out.format("ERROR: No conversation with name '%s'\n", name);
-          } else {
-            panels.push(createConversationPanel(conversation));
+          User otherUser = findOtherUser(name);
+          //syntax here is def wrong, should be calling changeRank
+          //on a conversationHeader
+          changeRank(otherUser.Uuid, ACCESSLEVEL.ADMIN)
           }
         } else {
-          System.out.println("ERROR: Missing <title>");
+          System.out.println("ERROR: Missing <username>");
         }
       }
+    });
+
+
 
       // Find the first conversation with the given name and return its context.
       // If no conversation has the given name, this will return null.
@@ -382,7 +358,10 @@ public final class Chat {
       public void invoke(Scanner args) {
         final String message = args.hasNext() ? args.nextLine().trim() : "";
         if (message.length() > 0) {
-          conversation.add(message);
+          //this syntax is wrong too, check how user can get called
+          if(conversationHeader[UUIDofCurrentUser] >= ACCESSLEVEL.MEMBER){
+            conversation.add(message);
+          }
         } else {
           System.out.println("ERROR: Messages must contain text");
         }
