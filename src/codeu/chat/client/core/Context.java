@@ -25,6 +25,7 @@ import codeu.chat.client.core.View;
 import codeu.chat.util.Uuid;
 import codeu.chat.util.connections.ConnectionSource;
 
+
 public final class Context {
 
   private final View view;
@@ -42,11 +43,6 @@ public final class Context {
         new UserContext(user, view, controller);
   }
 
-  public ServerInfo getInfo() {
-    return view.getInfo();
-  }
-
-
   public Iterable<UserContext> allUsers() {
     final Collection<UserContext> users = new ArrayList<>();
     for (final User user : view.getUsers()) {
@@ -54,4 +50,9 @@ public final class Context {
     }
     return users;
   }
+
+  public ServerInfo getInfo() {
+    return view.getInfo();
+  }
+
 }

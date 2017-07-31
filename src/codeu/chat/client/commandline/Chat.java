@@ -14,8 +14,6 @@
 
 package codeu.chat.client.commandline;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -24,6 +22,7 @@ import codeu.chat.client.core.Context;
 import codeu.chat.client.core.ConversationContext;
 import codeu.chat.client.core.MessageContext;
 import codeu.chat.client.core.UserContext;
+import codeu.chat.common.ServerInfo;
 
 public final class Chat {
 
@@ -110,6 +109,8 @@ public final class Chat {
         System.out.println("    Add a new user with the given name.");
         System.out.println("  u-sign-in <name>");
         System.out.println("    Sign in as the user with the given name.");
+        System.out.println("  info");
+        System.out.println("    Display all the info of the current system");
         System.out.println("  exit");
         System.out.println("    Exit the program.");
       }
@@ -158,7 +159,7 @@ public final class Chat {
         if (info == null) {
          System.out.println("Error: Server did not send valid object.");
         } else {
-          System.out.println("Server Version: " + info.version);
+          System.out.println("Server Version: " + info.version + " start time: " + info.startTime);
          // Print the server info to the user in a pretty way
         }
       }
