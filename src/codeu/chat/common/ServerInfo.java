@@ -1,6 +1,5 @@
 package codeu.chat.common;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,8 +31,12 @@ public final class ServerInfo {
   private final static String SERVER_VERSION = "1.0.0";
 
   public final Uuid version;
+  public final Time startTime;
+
 
   public ServerInfo(){
+    this.startTime = Time.now();
+
     Uuid tempVersion = null;
     try{
        tempVersion = Uuid.parse(SERVER_VERSION);
@@ -42,9 +45,11 @@ public final class ServerInfo {
     }
     this.version = tempVersion;
   }
-  public ServerInfo(Uuid version) {
+
+
+  public ServerInfo(Uuid version, Time startTime) {
     this.version = version;
+    this.startTime = startTime;
+
   }
-
-
 }

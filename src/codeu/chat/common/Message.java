@@ -64,6 +64,7 @@ public final class Message {
   public final String content;
   public final Uuid convoId;
   public Uuid next;
+  public Uuid convoId;
 
   public Message(Uuid id, Uuid next, Uuid previous, Time creation, Uuid author, String content, Uuid convoId) {
 
