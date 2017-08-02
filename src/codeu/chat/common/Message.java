@@ -62,6 +62,7 @@ public final class Message {
   public final Time creation;
   public final Uuid author;
   public final String content;
+  public final Uuid convoId;
   public Uuid next;
   public Uuid convoId;
 

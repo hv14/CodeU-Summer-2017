@@ -80,7 +80,8 @@ public final class Controller implements RawController, BasicController {
 
     if (foundUser != null && foundConversation != null && isIdFree(id)) {
 
-      message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body, conversation);
+      message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body, foundConversation.id);
+
       model.add(message);
       LOG.info("Message added: %s", message.id);
 

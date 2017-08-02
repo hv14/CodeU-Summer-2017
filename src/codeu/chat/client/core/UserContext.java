@@ -14,25 +14,106 @@
 
 package codeu.chat.client.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.lang.reflect.Array;
+import java.util.*;
 
-import codeu.chat.common.BasicController;
-import codeu.chat.common.BasicView;
-import codeu.chat.common.ConversationHeader;
-import codeu.chat.common.User;
+import codeu.chat.common.*;
+import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
 
 public final class UserContext {
 
   public final User user;
-  private final BasicView view;
+  public final BasicView view;
   private final BasicController controller;
 
   public UserContext(User user, BasicView view, BasicController controller) {
     this.user = user;
     this.view = view;
     this.controller = controller;
+  }
+
+  public void addInterestedUser(Uuid otherUserId) {
+    user.interestedUsers.add(otherUserId);
+  }
+
+  public void addInterestedConvo(Uuid convoId) {
+    user.interestedConvos.add(convoId);
+  }
+
+  public void delInterestedUser(Uuid otherUserId) {
+    user.interestedUsers.remove(otherUserId);
+  }
+
+  public void delInterestedConvo(Uuid convoId) {
+    user.interestedConvos.remove(convoId);
+  }
+
+  public Set<Uuid> listInterestedUsers() {
+    return user.interestedUsers;
+  }
+
+  public Set<Uuid> listInterestedConvos() {
+    return user.interestedConvos;
+  }
+
+  public boolean checkIfInterestedUser(Uuid otherUserId) {
+    return user.interestedUsers.contains(otherUserId);
+  }
+
+  public boolean checkIfInterestedConvo(Uuid convoId) {
+    return user.interestedConvos.contains(convoId);
+  }
+
+
+  public HashSet<String> getUpdatedConvosForUser(Uuid otherUserId){
+    //set current time when status is called here
+    Time recentUpdate = Time.now();
+
+    HashSet<String> updatedConvos = new HashSet<>();
+
+    Time previousUpdate = user.getLastUpdateUsers();
+
+    Iterator<ConversationHeader> it = view.getConversations().iterator();
+    while (it.hasNext()) {
+      ConversationHeader curr = it.next();
+      if (curr.owner.equals(otherUserId)) {
+        if (curr.creation.inRange(previousUpdate, recentUpdate)) {
+          updatedConvos.add(curr.title);
+        }
+      }
+    }
+
+    Iterator<Message> itMsges = view.getMessages(Arrays.asList(otherUserId)).iterator();
+    while (itMsges.hasNext()) {
+      Message curr = itMsges.next();
+      if (curr.creation.inRange(previousUpdate, recentUpdate)) {
+        ConversationHeader foundConvo = findConversation(curr.convoId);
+        if (foundConvo != null) {
+          updatedConvos.add(foundConvo.title);
+        }
+      }
+    }
+    user.setLastUpdateUsers(recentUpdate);
+
+    return updatedConvos;
+  }
+
+  public ConversationHeader findConversation(Uuid id) {
+    try {
+      Iterator<ConversationHeader> it = view.getConversations().iterator();
+      while (it.hasNext()) {
+        ConversationHeader curr = it.next();
+        if (curr.id.equals(id)) {
+          return curr;
+        }
+      }
+    }
+    catch (Exception ex) {
+      System.out.println(ex);
+    }
+
+    return null;
   }
 
   public ConversationContext start(String name) {
@@ -53,4 +134,26 @@ public final class UserContext {
 
     return all;
   }
+
+  public ArrayList<Message> getUpdatedMessages(ConversationHeader convo) {
+    Time recentUpdate = Time.now();
+    Time previousUpdate = user.getLastUpdateConvos();
+    ArrayList<Message> updatedMessages = new ArrayList<>();
+    ConversationContext convoContext = new ConversationContext(user, convo, view, controller);
+      for (MessageContext message = convoContext.firstMessage();
+           message != null;
+           message = message.next()) {
+        if (message.message.creation.inRange(previousUpdate, recentUpdate)) {
+          updatedMessages.add(message.message);
+        }
+      }
+
+
+    user.setLastUpdateConvos(recentUpdate);
+
+    return updatedMessages;
+  }
+
+
+
 }
