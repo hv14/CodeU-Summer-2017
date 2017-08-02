@@ -14,6 +14,7 @@
 
 package codeu.chat.server;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 import codeu.chat.common.ConversationHeader;
@@ -28,7 +29,10 @@ import codeu.chat.util.store.StoreAccessor;
 
 public final class Model {
 
+  public ArrayList<ConversationHeader> currentConversations = new ArrayList<>();
+
   private static final Comparator<Uuid> UUID_COMPARE = new Comparator<Uuid>() {
+
 
     @Override
     public int compare(Uuid a, Uuid b) {
@@ -90,6 +94,8 @@ public final class Model {
     conversationByTime.insert(conversation.creation, conversation);
     conversationByText.insert(conversation.title, conversation);
     conversationPayloadById.insert(conversation.id, new ConversationPayload(conversation.id));
+
+    currentConversations.add(conversation);
   }
 
   public StoreAccessor<Uuid, ConversationHeader> conversationById() {

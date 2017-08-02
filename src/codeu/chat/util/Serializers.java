@@ -14,11 +14,10 @@
 
 package codeu.chat.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 public final class Serializers {
 
@@ -124,6 +123,33 @@ public final class Serializers {
 
       return new String(BYTES.read(input));
 
+    }
+  };
+
+  public static final Serializer<HashMap<Uuid, AccessLevel>> HASH_MAP_SERIALIZER = new Serializer<HashMap<Uuid, AccessLevel>>() {
+    @Override
+    public void write(OutputStream out, HashMap<Uuid, AccessLevel> value) throws IOException {
+      FileOutputStream fos =
+              new FileOutputStream("hashmap.ser");
+      ObjectOutputStream oos = new ObjectOutputStream(fos);
+      oos.writeObject(value);
+      oos.close();
+      fos.close();
+    }
+
+    @Override
+    public HashMap<Uuid, AccessLevel> read(InputStream in) throws IOException {
+      FileInputStream fis = new FileInputStream("hashmap.ser");
+      ObjectInputStream ois = new ObjectInputStream(fis);
+      HashMap<Uuid, AccessLevel> usersInConvo = null;
+      try {
+        usersInConvo = (HashMap<Uuid, AccessLevel>) ois.readObject();
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      }
+      ois.close();
+      fis.close();
+      return usersInConvo;
     }
   };
 

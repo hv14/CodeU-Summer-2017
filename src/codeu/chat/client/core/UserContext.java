@@ -16,17 +16,19 @@ package codeu.chat.client.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import codeu.chat.common.BasicController;
 import codeu.chat.common.BasicView;
 import codeu.chat.common.ConversationHeader;
 import codeu.chat.common.User;
+import codeu.chat.util.AccessLevel;
 import codeu.chat.util.Uuid;
 
 public final class UserContext {
 
   public final User user;
-  private final BasicView view;
+  public final BasicView view;
   private final BasicController controller;
 
   public UserContext(User user, BasicView view, BasicController controller) {
@@ -35,12 +37,14 @@ public final class UserContext {
     this.controller = controller;
   }
 
-  public ConversationContext start(String name) {
-    final ConversationHeader conversation = controller.newConversation(name, user.id);
+  public ConversationContext start(String name, String defaultAcessLevel, HashMap<Uuid, AccessLevel> usersInConvo) {
+
+    final ConversationHeader conversation = controller.newConversation(name, user.id, defaultAcessLevel, usersInConvo);
     return conversation == null ?
         null :
         new ConversationContext(user, conversation, view, controller);
   }
+
 
   public Iterable<ConversationContext> conversations() {
 

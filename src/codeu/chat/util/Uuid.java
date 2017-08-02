@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-public final class Uuid {
+public final class Uuid implements java.io.Serializable {
 
   public static final Uuid NULL = new Uuid(0);
 

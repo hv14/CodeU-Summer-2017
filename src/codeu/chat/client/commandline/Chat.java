@@ -14,6 +14,8 @@
 
 package codeu.chat.client.commandline;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -23,6 +25,9 @@ import codeu.chat.client.core.ConversationContext;
 import codeu.chat.client.core.MessageContext;
 import codeu.chat.client.core.UserContext;
 import codeu.chat.common.ServerInfo;
+import codeu.chat.common.User;
+import codeu.chat.util.AccessLevel;
+import codeu.chat.util.Uuid;
 
 public final class Chat {
 
@@ -105,6 +110,8 @@ public final class Chat {
         System.out.println("     Output Server Version.");
         System.out.println("  u-list");
         System.out.println("    List all users.");
+        System.out.println("  u-add <name>");
+        System.out.println("    Add a new user with the given name.");
         System.out.println("  u-sign-in <name>");
         System.out.println("    Sign in as the user with the given name.");
         System.out.println("  info");
@@ -127,6 +134,25 @@ public final class Chat {
               "USER %s (UUID:%s)\n",
               user.user.name,
               user.user.id);
+        }
+      }
+    });
+
+    // U-ADD (add user)
+    //
+    // Add a command to add and sign-in as a new user when the user enters
+    // "u-add" while on the root panel.
+    //
+    panel.register("u-add", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String name = args.hasNext() ? args.nextLine().trim() : "";
+        if (name.length() > 0) {
+          if (context.create(name) == null) {
+            System.out.println("ERROR: Failed to create new user");
+          }
+        } else {
+          System.out.println("ERROR: Missing <username>");
         }
       }
     });
@@ -198,9 +224,11 @@ public final class Chat {
         System.out.println("USER MODE");
         System.out.println("  c-list");
         System.out.println("    List all conversations that the current user can interact with.");
-        System.out.println("  c-add <title>");
-        System.out.println("    Add a new conversation with the given title and join it as the current user.");
-        System.out.println("c-change-admin <Username>");
+        System.out.println("  c-add <title> <default access level>");
+        System.out.println("    Add a new conversation with the given title and join it as the current user. Also specify the default access level of other users who join.");
+        System.out.println("  c-join <title>");
+        System.out.println("    Join the conversation as the current user.");
+        System.out.println("  c-change-admin <Username>");
         System.out.println(     "Changes the status of a user that is already a member of the conversation to an admin");
         System.out.println("  info");
         System.out.println("    Display all info for the current user");
@@ -228,45 +256,89 @@ public final class Chat {
       }
     });
 
+    // C-ADD (add conversation)
+    //
+    // Add a command that will create and join a new conversation when the user
+    // enters "c-add" while on the user panel.
+    //
     panel.register("c-add", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
-        final String name = args.hasNext() ? args.nextLine().trim() : "";
-        if (name.length() > 0) {
-          //need to find the name and then find the/
-          //correct Uuid then we pass that and the level we want
-          //in this case always member,  with the
-          //user function, changeRank(Uuid, level)
-          User otherUser = findOtherUser(name);
-          //this syntax is wrong, I should be calling
-          //changeRank on a conversation header.
-          //If I need to find it then I need to add more input
-          //is that going to be a problem??
-          changeRank(otherUser.Uuid ,ACCESSLEVEL.MEMBER)
+        final String name = args.hasNext() ? args.next() : "";
+        String defaultAccessLevel = args.hasNext() ? args.next() : "";
+        if (name.length() > 0 && defaultAccessLevel.length() > 0) {
+          defaultAccessLevel = defaultAccessLevel.toLowerCase();
+          if (defaultAccessLevel.equals("owner") ||
+                  defaultAccessLevel.equals("member")) {
+            HashMap<Uuid, AccessLevel> usersInConvo = new HashMap<>();
+            usersInConvo.put(user.user.id, AccessLevel.creator);
+            final ConversationContext conversation = user.start(name, defaultAccessLevel, usersInConvo);
+            //conversation.addDefaultAccessLevel(AccessLevel.valueOf(defaultAccessLevel));
+            //System.out.println(conversation.conversation.defaultAccessLevel);
+            if (conversation == null) {
+              System.out.println("ERROR: Failed to create new conversation");
+            }
+            else {
+              panels.push(createCreatorConversationPanel(conversation));
+            }
+          }
+          else {
+            System.out.println("ERROR: access level must be 'owner' or 'member'");
+          }
 
-        } else {
-          System.out.println("ERROR: Missing <username>");
+        }
+        else {
+          System.out.println("ERROR: Missing <title> or <defaultAccessLevel>");
         }
       }
     });
 
-    panel.register("c-change-admin", new Panel.Command() {
+    // C-JOIN (join conversation)
+    //
+    // Add a command that will joing a conversation when the user enters
+    // "c-join" while on the user panel.
+    //
+    panel.register("c-join", new Panel.Command() {
       @Override
       public void invoke(Scanner args) {
         final String name = args.hasNext() ? args.nextLine().trim() : "";
         if (name.length() > 0) {
-          User otherUser = findOtherUser(name);
-          //syntax here is def wrong, should be calling changeRank
-          //on a conversationHeader
-          changeRank(otherUser.Uuid, ACCESSLEVEL.ADMIN)
+          final ConversationContext conversation = find(name);
+          if (conversation == null) {
+            System.out.format("ERROR: No conversation with name '%s'\n", name);
           }
-        } else {
-          System.out.println("ERROR: Missing <username>");
+          else {
+           // String[] userAccess = new String[2];
+            if (firstTimeUser(conversation)) {
+              AccessLevel defaultAccessLevel = conversation.conversation.defaultAccessLevel;
+              //System.out.println(defaultAccessLevel);
+              conversation.changeUserAccessLevel(user.user, defaultAccessLevel.toString());
+              //userAccess = access.split(":");
+              //System.out.println("first time: " + userAccess[1]);
+
+
+            }
+            HashMap<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
+            if (canUserJoin(conversation)) {
+             // System.out.println(conversation.conversation.usersInConvo.get(user.user.id));
+              if (userAccess.get(user.user.id) == AccessLevel.owner) {
+                panels.push(createOwnerConversationPanel(conversation));
+              } else if (userAccess.get(user.user.id) == AccessLevel.creator) {
+                panels.push(createCreatorConversationPanel(conversation));
+              }
+              else {
+                panels.push(createConversationPanel(conversation));
+              }
+            }
+            else {
+              System.out.println("ERROR: You are not allowed to join this conversation");
+            }
+          }
+        }
+        else {
+          System.out.println("ERROR: Missing <title>");
         }
       }
-    });
-
-
 
       // Find the first conversation with the given name and return its context.
       // If no conversation has the given name, this will return null.
@@ -278,7 +350,18 @@ public final class Chat {
         }
         return null;
       }
+
+      private boolean canUserJoin(ConversationContext conversation) {
+        HashMap<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
+        return (userAccess.get(user.user.id) != AccessLevel.blocked) ? true : false;
+      }
+
+      private boolean firstTimeUser(ConversationContext conversation) {
+        HashMap<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
+        return  (userAccess.get(user.user.id) == null) ? true : false;
+      }
     });
+
 
     // INFO
     //
@@ -298,6 +381,272 @@ public final class Chat {
     // so that it can be used.
     return panel;
   }
+
+  private Panel createCreatorConversationPanel(final ConversationContext conversation) {
+
+    final Panel panel = new Panel();
+
+    // HELP
+    //
+    // Add a command that will print all the commands and their descriptions
+    // when the user enters "help" while on the conversation panel.
+    //
+    panel.register("help", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("USER MODE");
+        System.out.println("  m-list");
+        System.out.println("    List all messages in the current conversation.");
+        System.out.println("  m-add <message>");
+        System.out.println("    Add a new message to the current conversation as the current user.");
+        System.out.println("  m-change-access <username> <new access level>");
+        System.out.println("    Change the access level of a user.");
+        System.out.println("  info");
+        System.out.println("    Display all info about the current conversation.");
+        System.out.println("  back");
+        System.out.println("    Go back to USER MODE.");
+        System.out.println("  exit");
+        System.out.println("    Exit the program.");
+      }
+    });
+
+    // M-LIST (list messages)
+    //
+    // Add a command to print all messages in the current conversation when the
+    // user enters "m-list" while on the conversation panel.
+    //
+    panel.register("m-list", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("--- start of conversation ---");
+        for (MessageContext message = conversation.firstMessage();
+             message != null;
+             message = message.next()) {
+          System.out.println();
+          System.out.format("USER : %s\n", message.message.author);
+          System.out.format("SENT : %s\n", message.message.creation);
+          System.out.println();
+          System.out.println(message.message.content);
+          System.out.println();
+        }
+        System.out.println("---  end of conversation  ---");
+      }
+    });
+
+    // M-ADD (add message)
+    //
+    // Add a command to add a new message to the current conversation when the
+    // user enters "m-add" while on the conversation panel.
+    //
+    panel.register("m-add", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String message = args.hasNext() ? args.nextLine().trim() : "";
+        if (message.length() > 0) {
+          conversation.add(message);
+        } else {
+          System.out.println("ERROR: Messages must contain text");
+        }
+      }
+    });
+
+    panel.register("m-change-access", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String otherUsername = args.hasNext() ? args.next() : "";
+        final String newAccessLevel = args.hasNext() ? args.next() : "";
+        if (otherUsername.length() > 0 && newAccessLevel.length() > 0) {
+          if (newAccessLevel.equalsIgnoreCase("owner") ||
+                  newAccessLevel.equalsIgnoreCase("member") ||
+                  newAccessLevel.equalsIgnoreCase("blocked")) {
+            User otherUser = findOtherUser(otherUsername);
+            if (otherUser != null) {
+              conversation.changeUserAccessLevel(otherUser, newAccessLevel);
+            }
+          }
+          else {
+            System.out.println("ERROR: access level must be 'owner', 'member', or 'blocked'");
+          }
+        }
+        else {
+          System.out.println("ERROR: Please make sure to specify a username and a new access level");
+        }
+      }
+
+      public User findOtherUser(String name) {
+        try {
+          Iterator<User> it = conversation.view.getUsers().iterator();
+          while (it.hasNext()) {
+            User curr = it.next();
+            if (curr.name.equalsIgnoreCase(name)) {
+              return curr;
+            }
+          }
+        }
+        catch (Exception e) {
+          System.out.println(e);
+        }
+
+        return null;
+      }
+    });
+
+    // INFO
+    //
+    // Add a command to print info about the current conversation when the user
+    // enters "info" while on the conversation panel.
+    //
+    panel.register("info", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("Conversation Info:");
+        System.out.format("  Title : %s\n", conversation.conversation.title);
+        System.out.format("  Id    : UUID:%s\n", conversation.conversation.id);
+        System.out.format("  Owner : %s\n", conversation.conversation.owner);
+      }
+    });
+
+    // Now that the panel has all its commands registered, return the panel
+    // so that it can be used.
+    return panel;
+
+
+
+  }
+
+
+  private Panel createOwnerConversationPanel(final ConversationContext conversation) {
+
+    final Panel panel = new Panel();
+
+    // HELP
+    //
+    // Add a command that will print all the commands and their descriptions
+    // when the user enters "help" while on the conversation panel.
+    //
+    panel.register("help", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("USER MODE");
+        System.out.println("  m-list");
+        System.out.println("    List all messages in the current conversation.");
+        System.out.println("  m-add <message>");
+        System.out.println("    Add a new message to the current conversation as the current user.");
+        System.out.println("  m-change-member-access <username>");
+        System.out.println("    Change the member access of a user. Doing so will remove them for the conversation");
+        System.out.println("  info");
+        System.out.println("    Display all info about the current conversation.");
+        System.out.println("  back");
+        System.out.println("    Go back to USER MODE.");
+        System.out.println("  exit");
+        System.out.println("    Exit the program.");
+      }
+    });
+
+    // M-LIST (list messages)
+    //
+    // Add a command to print all messages in the current conversation when the
+    // user enters "m-list" while on the conversation panel.
+    //
+    panel.register("m-list", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("--- start of conversation ---");
+        for (MessageContext message = conversation.firstMessage();
+             message != null;
+             message = message.next()) {
+          System.out.println();
+          System.out.format("USER : %s\n", message.message.author);
+          System.out.format("SENT : %s\n", message.message.creation);
+          System.out.println();
+          System.out.println(message.message.content);
+          System.out.println();
+        }
+        System.out.println("---  end of conversation  ---");
+      }
+    });
+
+    // M-ADD (add message)
+    //
+    // Add a command to add a new message to the current conversation when the
+    // user enters "m-add" while on the conversation panel.
+    //
+    panel.register("m-add", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String message = args.hasNext() ? args.nextLine().trim() : "";
+        if (message.length() > 0) {
+          conversation.add(message);
+        } else {
+          System.out.println("ERROR: Messages must contain text");
+        }
+      }
+    });
+
+
+    panel.register("m-change-member-access", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String username = args.hasNext() ? args.nextLine().trim() : "";
+        if (username.length() > 0) {
+          User user = findOtherUser(username);
+          conversation.changeUserAccessLevel(user, "blocked");
+        } else {
+          System.out.println("ERROR: Please specify a username");
+        }
+      }
+
+      public User findOtherUser(String name) {
+        try {
+          Iterator<User> it = conversation.view.getUsers().iterator();
+          while (it.hasNext()) {
+            User curr = it.next();
+            if (curr.name.equalsIgnoreCase(name)) {
+              return curr;
+            }
+          }
+        }
+        catch (Exception e) {
+          System.out.println(e);
+        }
+
+        return null;
+      }
+    });
+
+    // INFO
+    //
+    // Add a command to print info about the current conversation when the user
+    // enters "info" while on the conversation panel.
+    //
+    panel.register("info", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("Conversation Info:");
+        System.out.format("  Title : %s\n", conversation.conversation.title);
+        System.out.format("  Id    : UUID:%s\n", conversation.conversation.id);
+        System.out.format("  Owner : %s\n", conversation.conversation.owner);
+      }
+    });
+
+    // Now that the panel has all its commands registered, return the panel
+    // so that it can be used.
+    return panel;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   private Panel createConversationPanel(final ConversationContext conversation) {
 
@@ -358,10 +707,7 @@ public final class Chat {
       public void invoke(Scanner args) {
         final String message = args.hasNext() ? args.nextLine().trim() : "";
         if (message.length() > 0) {
-          //this syntax is wrong too, check how user can get called
-          if(conversationHeader[UUIDofCurrentUser] >= ACCESSLEVEL.MEMBER){
             conversation.add(message);
-          }
         } else {
           System.out.println("ERROR: Messages must contain text");
         }

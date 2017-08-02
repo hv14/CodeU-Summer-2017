@@ -16,6 +16,7 @@ package codeu.chat.client.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import codeu.chat.common.BasicView;
 import codeu.chat.common.ConversationHeader;
@@ -24,10 +25,7 @@ import codeu.chat.common.Message;
 import codeu.chat.common.NetworkCode;
 import codeu.chat.common.User;
 import codeu.chat.common.ServerInfo;
-import codeu.chat.util.Logger;
-import codeu.chat.util.Serializers;
-import codeu.chat.util.Time;
-import codeu.chat.util.Uuid;
+import codeu.chat.util.*;
 import codeu.chat.util.connections.Connection;
 import codeu.chat.util.connections.ConnectionSource;
 
@@ -67,6 +65,28 @@ final class View implements BasicView {
     }
 
     return users;
+  }
+
+  @Override
+  public HashMap<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId) {
+    try (final Connection connection = this.source.connect()) {
+      Serializers.INTEGER.write(connection.out(), NetworkCode.GET_USERS_ACCESS_REQUEST);
+      Uuid.SERIALIZER.write(connection.out(), convoId);
+
+      if (Serializers.INTEGER.read(connection.in()) == NetworkCode.GET_USERS_ACCESS_RESPONSE) {
+        final HashMap<Uuid, AccessLevel> usersInConvo = Serializers.HASH_MAP_SERIALIZER.read(connection.in());
+        return usersInConvo;
+      }
+      else {
+        LOG.error("Response from server failed.");
+      }
+    }
+    catch (Exception ex) {
+      System.out.println("ERROR: Exception during call on server. Check log for details.");
+      LOG.error(ex, "Exception during call on server.");
+    }
+
+    return null;
   }
 
   public ServerInfo getInfo() {

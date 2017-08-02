@@ -17,12 +17,14 @@ package codeu.chat.client.core;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread;
+import java.util.HashMap;
 
 import codeu.chat.common.BasicController;
 import codeu.chat.common.ConversationHeader;
 import codeu.chat.common.Message;
 import codeu.chat.common.NetworkCode;
 import codeu.chat.common.User;
+import codeu.chat.util.AccessLevel;
 import codeu.chat.util.Logger;
 import codeu.chat.util.Serializers;
 import codeu.chat.util.Uuid;
@@ -89,8 +91,33 @@ final class Controller implements BasicController {
     return response;
   }
 
+  public String changeUserAccess(Uuid user, AccessLevel newAccess, Uuid convoId) {
+    String response = null;
+    try (final Connection connection = source.connect()) {
+
+      Serializers.INTEGER.write(connection.out(), NetworkCode.CHANGE_USER_ACCESS_REQUEST);
+      Uuid.SERIALIZER.write(connection.out(), user);
+      Serializers.STRING.write(connection.out(), newAccess.toString());
+      Uuid.SERIALIZER.write(connection.out(), convoId);
+      //Serializers.STRING.write(connection.out(), user.toString() + ":" + newAccess.toString());
+
+      if (Serializers.INTEGER.read(connection.in()) == NetworkCode.CHANGE_USER_ACCESS_RESPONSE) {
+        response = Serializers.nullable(Serializers.STRING).read(connection.in());
+      }
+      else {
+        LOG.error("Response from server failed.");
+      }
+    }
+    catch (Exception ex) {
+      System.out.println("ERROR: Exception during call on server. Check log for details.");
+      LOG.error(ex, "Exception during call on server.");
+    }
+
+    return response;
+  }
+
   @Override
-  public ConversationHeader newConversation(String title, Uuid owner)  {
+  public ConversationHeader newConversation(String title, Uuid owner, String defaultAccessLevel, HashMap<Uuid, AccessLevel> usersInConvo)  {
 
     ConversationHeader response = null;
 
@@ -99,6 +126,8 @@ final class Controller implements BasicController {
       Serializers.INTEGER.write(connection.out(), NetworkCode.NEW_CONVERSATION_REQUEST);
       Serializers.STRING.write(connection.out(), title);
       Uuid.SERIALIZER.write(connection.out(), owner);
+      Serializers.STRING.write(connection.out(), defaultAccessLevel);
+      Serializers.HASH_MAP_SERIALIZER.write(connection.out(), usersInConvo);
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_CONVERSATION_RESPONSE) {
         response = Serializers.nullable(ConversationHeader.SERIALIZER).read(connection.in());

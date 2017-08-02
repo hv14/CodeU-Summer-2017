@@ -15,6 +15,7 @@
 package codeu.chat.server;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 import codeu.chat.common.BasicController;
 import codeu.chat.common.ConversationHeader;
@@ -23,6 +24,7 @@ import codeu.chat.common.Message;
 import codeu.chat.common.RandomUuidGenerator;
 import codeu.chat.common.RawController;
 import codeu.chat.common.User;
+import codeu.chat.util.AccessLevel;
 import codeu.chat.util.Logger;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
@@ -50,8 +52,8 @@ public final class Controller implements RawController, BasicController {
   }
 
   @Override
-  public ConversationHeader newConversation(String title, Uuid owner) {
-    return newConversation(createId(), title, owner, Time.now());
+  public ConversationHeader newConversation(String title, Uuid owner, String defaultAccessLevel, HashMap<Uuid, AccessLevel> usersInConvo) {
+    return newConversation(createId(), title, owner, Time.now(), defaultAccessLevel, usersInConvo);
   }
 
   @Override
@@ -128,14 +130,36 @@ public final class Controller implements RawController, BasicController {
   }
 
   @Override
-  public ConversationHeader newConversation(Uuid id, String title, Uuid owner, Time creationTime) {
+  public String changeUserAccess(Uuid user, AccessLevel newAccess, Uuid convoId) {
+      ConversationHeader convo = findConvoById(convoId);
+      System.out.println(convo.title);
+      if (convo != null) {
+        convo.usersInConvo.put(user, newAccess);
+      }
+
+      return user.toString() + ":" + newAccess.toString();
+  }
+
+  public ConversationHeader findConvoById(Uuid convoId) {
+    for (ConversationHeader convo : model.currentConversations) {
+      if (convo.id.equals(convoId)) {
+        return convo;
+      }
+    }
+
+    return null;
+  }
+
+  @Override
+  public ConversationHeader newConversation(Uuid id, String title, Uuid owner, Time creationTime, String defaultAccessLevel, HashMap<Uuid, AccessLevel> usersInConvo) {
 
     final User foundOwner = model.userById().first(owner);
 
     ConversationHeader conversation = null;
 
     if (foundOwner != null && isIdFree(id)) {
-      conversation = new ConversationHeader(id, owner, creationTime, title);
+      conversation = new ConversationHeader(id, owner, creationTime, title, defaultAccessLevel, usersInConvo);
+
       model.add(conversation);
       LOG.info("Conversation added: " + id);
     }

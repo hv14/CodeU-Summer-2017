@@ -34,11 +34,7 @@ import codeu.chat.common.Relay;
 import codeu.chat.common.Secret;
 import codeu.chat.common.User;
 import codeu.chat.common.ServerInfo;
-import codeu.chat.util.Logger;
-import codeu.chat.util.Serializers;
-import codeu.chat.util.Time;
-import codeu.chat.util.Timeline;
-import codeu.chat.util.Uuid;
+import codeu.chat.util.*;
 import codeu.chat.util.connections.Connection;
 
 public final class Server {
@@ -135,10 +131,26 @@ public final class Server {
 
         final String title = Serializers.STRING.read(in);
         final Uuid owner = Uuid.SERIALIZER.read(in);
-        final ConversationHeader conversation = controller.newConversation(title, owner);
+        final String defaultAccessLevel = Serializers.STRING.read(in);
+        final HashMap<Uuid, AccessLevel> usersInConvo = Serializers.HASH_MAP_SERIALIZER.read(in);
+        final ConversationHeader conversation = controller.newConversation(title, owner, defaultAccessLevel, usersInConvo);
 
         Serializers.INTEGER.write(out, NetworkCode.NEW_CONVERSATION_RESPONSE);
         Serializers.nullable(ConversationHeader.SERIALIZER).write(out, conversation);
+      }
+    });
+
+    this.commands.put(NetworkCode.CHANGE_USER_ACCESS_REQUEST,  new Command() {
+      @Override
+      public void onMessage(InputStream in, OutputStream out) throws IOException {
+
+        final Uuid user = Uuid.SERIALIZER.read(in);
+        final String accessLevel = Serializers.STRING.read(in);
+        final Uuid convoId = Uuid.SERIALIZER.read(in);
+        final String newAccess = controller.changeUserAccess(user, AccessLevel.valueOf(accessLevel), convoId);
+
+        Serializers.INTEGER.write(out, NetworkCode.CHANGE_USER_ACCESS_RESPONSE);
+        Serializers.nullable(Serializers.STRING).write(out, newAccess);
       }
     });
 
@@ -151,6 +163,22 @@ public final class Server {
 
         Serializers.INTEGER.write(out, NetworkCode.GET_USERS_RESPONSE);
         Serializers.collection(User.SERIALIZER).write(out, users);
+      }
+    });
+
+    this.commands.put(NetworkCode.GET_USERS_ACCESS_REQUEST, new Command() {
+      @Override
+      public void onMessage(InputStream in, OutputStream out) throws IOException {
+
+        final Uuid convoId = Uuid.SERIALIZER.read(in);
+        final HashMap<Uuid, AccessLevel> users = view.getUsersAccessInConvo(convoId);
+
+        for (Uuid al : users.keySet()) {
+          System.out.println(al + " : " + users.get(al));
+        }
+
+        Serializers.INTEGER.write(out, NetworkCode.GET_USERS_ACCESS_RESPONSE);
+        Serializers.HASH_MAP_SERIALIZER.write(out, users);
       }
     });
 
@@ -269,13 +297,15 @@ public final class Server {
 
     if (conversation == null) {
 
+      HashMap<Uuid, AccessLevel> usersInConvo = new HashMap<>();
       // As the relay does not tell us who made the conversation - the first person who
       // has a message in the conversation will get ownership over this server's copy
       // of the conversation.
       conversation = controller.newConversation(relayConversation.id(),
                                                 relayConversation.text(),
                                                 user.id,
-                                                relayConversation.time());
+                                                relayConversation.time(),
+              "owner", usersInConvo);
     }
 
     Message message = model.messageById().first(relayMessage.id());

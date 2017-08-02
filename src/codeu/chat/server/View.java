@@ -16,6 +16,7 @@ package codeu.chat.server;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import codeu.chat.common.BasicView;
 import codeu.chat.common.ServerInfo;
@@ -24,6 +25,7 @@ import codeu.chat.common.ConversationPayload;
 import codeu.chat.common.Message;
 import codeu.chat.common.SinglesView;
 import codeu.chat.common.User;
+import codeu.chat.util.AccessLevel;
 import codeu.chat.util.Logger;
 import codeu.chat.util.Uuid;
 import codeu.chat.util.store.StoreAccessor;
@@ -52,6 +54,27 @@ public final class View implements BasicView, SinglesView {
   @Override
   public Collection<ConversationPayload> getConversationPayloads(Collection<Uuid> ids) {
     return intersect(model.conversationPayloadById(), ids);
+  }
+
+  @Override
+  public HashMap<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId) {
+    ConversationHeader convo = findConvoById(convoId);
+    //LOG.info(convo.title);
+    if (convo != null) {
+      return convo.usersInConvo;
+    }
+
+    return null;
+  }
+
+  public ConversationHeader findConvoById(Uuid convoId) {
+    for (ConversationHeader convo : model.currentConversations) {
+      if (convo.id.equals(convoId)) {
+        return convo;
+      }
+    }
+
+    return null;
   }
 
   @Override

@@ -15,7 +15,9 @@
 package codeu.chat.common;
 
 import java.util.Collection;
+import java.util.HashMap;
 
+import codeu.chat.util.AccessLevel;
 import codeu.chat.util.Uuid;
 
 // BASIC VIEW
@@ -52,4 +54,6 @@ public interface BasicView {
   //
   //  Return info about the current server like version and up time
   ServerInfo getInfo();
+
+  HashMap<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId);
 }

@@ -14,6 +14,7 @@
 
 package codeu.chat.client.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import codeu.chat.common.ConversationHeader;
 import codeu.chat.common.ConversationPayload;
 import codeu.chat.common.Message;
 import codeu.chat.common.User;
+import codeu.chat.util.AccessLevel;
 import codeu.chat.util.Uuid;
 
 public final class ConversationContext {
@@ -31,8 +33,9 @@ public final class ConversationContext {
   public final User user;
   public final ConversationHeader conversation;
 
-  private final BasicView view;
+  public final BasicView view;
   private final BasicController controller;
+
 
   public ConversationContext(User user,
                              ConversationHeader conversation,
@@ -43,6 +46,19 @@ public final class ConversationContext {
     this.conversation = conversation;
     this.view = view;
     this.controller = controller;
+  }
+
+  public void addDefaultAccessLevel(AccessLevel defaultAccessLevel) {
+   // conversation.defaultAccessLevel = defaultAccessLevel;
+  }
+
+  public String changeUserAccessLevel(User user, String accessLevel) {
+    return controller.changeUserAccess(user.id, AccessLevel.valueOf(accessLevel), conversation.id);
+    //conversation.usersInConvo.put(user.id, AccessLevel.valueOf(accessLevel));
+  }
+
+  public void removeUser(User user) {
+    conversation.usersInConvo.remove(user.id);
   }
 
   public MessageContext add(String messageBody) {

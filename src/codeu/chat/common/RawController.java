@@ -14,8 +14,11 @@
 
 package codeu.chat.common;
 
+import codeu.chat.util.AccessLevel;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
+
+import java.util.HashMap;
 
 // RAW CONTROLLER
 //
@@ -40,6 +43,6 @@ public interface RawController {
   //
   // Add a new conversation to the model with a specific if. If the id is
   // already in use, the call will fail and null will be returned.
-  ConversationHeader newConversation(Uuid id, String title, Uuid owner, Time creationTime);
+  ConversationHeader newConversation(Uuid id, String title, Uuid owner, Time creationTime, String defaultAccessLevel, HashMap<Uuid, AccessLevel> usersInConvo);
 
 }

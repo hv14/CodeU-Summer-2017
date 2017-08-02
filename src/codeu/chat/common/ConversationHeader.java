@@ -17,15 +17,9 @@ package codeu.chat.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 
-import codeu.chat.util.Serializer;
-import codeu.chat.util.Serializers;
-import codeu.chat.util.Time;
-import codeu.chat.util.Uuid;
-
-public enum ACCESSLEVEL{
-  CREATOR, ADMIN, MEMBER
-}
+import codeu.chat.util.*;
 
 public final class ConversationHeader {
 
@@ -38,6 +32,7 @@ public final class ConversationHeader {
       Uuid.SERIALIZER.write(out, value.owner);
       Time.SERIALIZER.write(out, value.creation);
       Serializers.STRING.write(out, value.title);
+      Serializers.STRING.write(out, value.defaultAccessLevel.toString());
 
     }
 
@@ -45,10 +40,12 @@ public final class ConversationHeader {
     public ConversationHeader read(InputStream in) throws IOException {
 
       return new ConversationHeader(
-          Uuid.SERIALIZER.read(in),
-          Uuid.SERIALIZER.read(in),
-          Time.SERIALIZER.read(in),
-          Serializers.STRING.read(in)
+              Uuid.SERIALIZER.read(in),
+              Uuid.SERIALIZER.read(in),
+              Time.SERIALIZER.read(in),
+              Serializers.STRING.read(in),
+              Serializers.STRING.read(in),
+              Serializers.HASH_MAP_SERIALIZER.read(in)
       );
 
     }
@@ -58,45 +55,19 @@ public final class ConversationHeader {
   public final Uuid owner;
   public final Time creation;
   public final String title;
-  public HashMap<Uuid, Enum> memberlevels = new HashMap<>();
+  public final AccessLevel defaultAccessLevel;
 
-  public ConversationHeader(Uuid id, Uuid owner, Time creation, String title) {
+  public HashMap<Uuid, AccessLevel> usersInConvo = new HashMap<>();
 
+  public ConversationHeader(Uuid id, Uuid owner, Time creation, String title, String defaultAccessLevel, HashMap<Uuid, AccessLevel> usersInConvo) {
     this.id = id;
     this.owner = owner;
     this.creation = creation;
     this.title = title;
-    this.memberlevels = memberlevels;
-    this.memberlevels[owner] = ACCESSLEVEL.CREATOR;
-
-    //need to find the user by name in the command line chat
-    // and then input their Uuid here
-    public void changeRank(Uuid updateUser, ACCESSLEVEL goalLevel){
-
-      //use the name to find the UUID of the person
-      //whos' access we want to change
-      if(this.accessControl[self.UUID] == AccessLevel.ADMIN){
-		    if(goalLevel == AccessLevel.MEMBER){
-          if (context.create(name) == null) {
-            System.out.println("ERROR: Failed to create new user");
-          }
-			    this.accessControl[alteringUUID] = AccessLevel.MEMBER;
-          }
-        }
-	    if(this.accessControl[self.UUID] ==  AccessLevel.CREATOR){
-		    if(goalLevel == AccessLevel.MEMBER){
-          if (context.create(name) == null) {
-            System.out.println("ERROR: Failed to create new user");
-          }
-			    this.accessControl[alteringUUID] = AccessLevel.MEMBER;
-          }
-        if(goalLevel == AccessLevel.ADMIN){
-			    this.accessControl[alteringUUID] = AccessLevel.ADMIN;
-          }
-      }
-    }
-
-
+    this.defaultAccessLevel = AccessLevel.valueOf(defaultAccessLevel);
+    this.usersInConvo = usersInConvo;
 
   }
+
+
 }
