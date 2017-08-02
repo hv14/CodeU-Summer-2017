@@ -15,31 +15,15 @@
 
 package codeu.chat.server;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import codeu.chat.common.ConversationHeader;
-import codeu.chat.common.ConversationPayload;
-import codeu.chat.common.LinearUuidGenerator;
-import codeu.chat.common.Message;
-import codeu.chat.common.NetworkCode;
-import codeu.chat.common.Relay;
-import codeu.chat.common.Secret;
-import codeu.chat.common.User;
+import java.util.*;
 import codeu.chat.common.ServerInfo;
-import codeu.chat.util.Logger;
-import codeu.chat.util.Serializers;
-import codeu.chat.util.Time;
-import codeu.chat.util.Timeline;
-import codeu.chat.util.Uuid;
+import codeu.chat.common.*;
+import codeu.chat.util.*;
 import codeu.chat.util.connections.Connection;
+import com.google.gson.Gson;
 
 public final class Server {
 
@@ -52,6 +36,8 @@ public final class Server {
   private static final ServerInfo info = new ServerInfo();
 
   private static final int RELAY_REFRESH_MS = 5000;  // 5 seconds
+
+  private static final int SAVE_DATA_BUFFER_MS = 30000; // 30 seconds. If you want to save more or less frequently change this number
 
   private final Timeline timeline = new Timeline();
 
@@ -73,6 +59,9 @@ public final class Server {
     this.secret = secret;
     this.controller = new Controller(id, model);
     this.relay = relay;
+
+    model.refreshData();
+    controller.refreshData();
 
     this.commands.put(NetworkCode.SERVER_INFO_REQUEST, new Command() {
       @Override
@@ -125,6 +114,7 @@ public final class Server {
 
         Serializers.INTEGER.write(out, NetworkCode.NEW_USER_RESPONSE);
         Serializers.nullable(User.SERIALIZER).write(out, user);
+
       }
     });
 
@@ -175,6 +165,7 @@ public final class Server {
       public void onMessage(InputStream in, OutputStream out) throws IOException {
 
         final Collection<Uuid> ids = Serializers.collection(Uuid.SERIALIZER).read(in);
+
         final Collection<ConversationPayload> conversations = view.getConversationPayloads(ids);
 
         Serializers.INTEGER.write(out, NetworkCode.GET_CONVERSATIONS_BY_ID_RESPONSE);
@@ -188,12 +179,41 @@ public final class Server {
       public void onMessage(InputStream in, OutputStream out) throws IOException {
 
         final Collection<Uuid> ids = Serializers.collection(Uuid.SERIALIZER).read(in);
+
         final Collection<Message> messages = view.getMessages(ids);
 
         Serializers.INTEGER.write(out, NetworkCode.GET_MESSAGES_BY_ID_RESPONSE);
         Serializers.collection(Message.SERIALIZER).write(out, messages);
       }
     });
+
+    //This saves everything to their respective textfiles
+    this.timeline.scheduleNow(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          LOG.info("Saving current state...");
+
+          Gson gson = new Gson();
+          Json json = new Json();
+          String jsonUsers = gson.toJson(new UserCollection(model.currentUsers));
+          String jsonConversations = gson.toJson(new ConversationCollection(model.currentConversations));
+          String jsonMessages = gson.toJson(new MessageCollection(model.currentMessages));
+
+          json.write("savedUsers.txt", jsonUsers);
+          json.write("savedConvos.txt", jsonConversations);
+          json.write("savedMessages.txt", jsonMessages);
+
+        } catch (Exception ex) {
+
+          System.out.print(ex);
+          LOG.error("Failed to save data");
+        }
+
+        timeline.scheduleIn(SAVE_DATA_BUFFER_MS, this);
+      }
+    });
+
 
     this.timeline.scheduleNow(new Runnable() {
       @Override

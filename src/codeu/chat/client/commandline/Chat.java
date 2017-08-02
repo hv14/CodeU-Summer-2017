@@ -110,7 +110,7 @@ public final class Chat {
         System.out.println("  u-sign-in <name>");
         System.out.println("    Sign in as the user with the given name.");
         System.out.println("  info");
-        System.out.println("    Display all the info of the current system");
+        System.out.println("    Display all the info about the current system");
         System.out.println("  exit");
         System.out.println("    Exit the program.");
       }
@@ -198,6 +198,36 @@ public final class Chat {
         return null;
       }
     });
+
+    // info
+    //
+    // Display the start time of the server when the user types
+    // "info" while on the root panel.
+    //
+    panel.register("u-info", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final ServerInfo info = context.getInfo();
+        if (info == null) {
+          System.out.println("No info was found");
+        }
+        else {
+          System.out.println("time: " + context.getInfo().startTime);
+        }
+      }
+
+      // Find the first user with the given name and return a user context
+      // for that user. If no user is found, the function will return null.
+      private UserContext findUser(String name) {
+        for (final UserContext user : context.allUsers()) {
+          if (user.user.name.equals(name)) {
+            return user;
+          }
+        }
+        return null;
+      }
+    });
+
 
     // Now that the panel has all its commands registered, return the panel
     // so that it can be used.
