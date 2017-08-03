@@ -127,7 +127,7 @@ final class Controller implements BasicController {
       Serializers.STRING.write(connection.out(), title);
       Uuid.SERIALIZER.write(connection.out(), owner);
       Serializers.STRING.write(connection.out(), defaultAccessLevel);
-      Serializers.HASH_MAP_SERIALIZER.write(connection.out(), usersInConvo);
+      Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).write(connection.out(), usersInConvo);
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_CONVERSATION_RESPONSE) {
         response = Serializers.nullable(ConversationHeader.SERIALIZER).read(connection.in());

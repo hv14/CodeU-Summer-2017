@@ -74,7 +74,7 @@ final class View implements BasicView {
       Uuid.SERIALIZER.write(connection.out(), convoId);
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.GET_USERS_ACCESS_RESPONSE) {
-        final HashMap<Uuid, AccessLevel> usersInConvo = Serializers.HASH_MAP_SERIALIZER.read(connection.in());
+        final HashMap<Uuid, AccessLevel> usersInConvo = Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).read(connection.in());
         return usersInConvo;
       }
       else {

@@ -45,7 +45,7 @@ public final class ConversationHeader {
               Time.SERIALIZER.read(in),
               Serializers.STRING.read(in),
               Serializers.STRING.read(in),
-              Serializers.HASH_MAP_SERIALIZER.read(in)
+              Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).read(in)
       );
 
     }

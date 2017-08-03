@@ -15,9 +15,7 @@
 package codeu.chat.util;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.*;
 
 public final class Serializers {
 
@@ -135,6 +133,7 @@ public final class Serializers {
       oos.writeObject(value);
       oos.close();
       fos.close();
+
     }
 
     @Override
@@ -176,6 +175,41 @@ public final class Serializers {
       }
     };
   }
+
+
+  public static <K, V> Serializer<HashMap<K, V>> MAP (final Serializer<K> keySerializer, final Serializer<V> valueSerializer) {
+
+    return new Serializer<HashMap<K, V>>() {
+
+      @Override
+      public void write(OutputStream out, HashMap<K, V> value) throws IOException {
+        INTEGER.write(out, value.size());
+        ArrayList<K> keys = new ArrayList<K>();
+        ArrayList<V> values = new ArrayList<V>();
+        for (K key : value.keySet()) {
+          keys.add(key);
+          values.add(value.get(key));
+        }
+        collection(keySerializer).write(out, keys);
+        collection(valueSerializer).write(out, values);
+      }
+
+      @Override
+      public HashMap<K,V> read(InputStream in) throws IOException {
+        final int size = INTEGER.read(in);
+        final ArrayList<K> keys = new ArrayList<K>(collection(keySerializer).read(in));
+        final ArrayList<V> values = new ArrayList<V>(collection(valueSerializer).read(in));
+        HashMap<K, V> both = new HashMap<K, V>();
+        for (int i = 0; i < size; i++) {
+          both.put(keys.get(i), values.get(i));
+        }
+
+        return both;
+      }
+
+    };
+
+  };
 
   public static <T> Serializer<T> nullable(final Serializer<T> serializer) {
 

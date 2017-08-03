@@ -132,7 +132,7 @@ public final class Server {
         final String title = Serializers.STRING.read(in);
         final Uuid owner = Uuid.SERIALIZER.read(in);
         final String defaultAccessLevel = Serializers.STRING.read(in);
-        final HashMap<Uuid, AccessLevel> usersInConvo = Serializers.HASH_MAP_SERIALIZER.read(in);
+        final HashMap<Uuid, AccessLevel> usersInConvo = Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).read(in);
         final ConversationHeader conversation = controller.newConversation(title, owner, defaultAccessLevel, usersInConvo);
 
         Serializers.INTEGER.write(out, NetworkCode.NEW_CONVERSATION_RESPONSE);
@@ -178,7 +178,7 @@ public final class Server {
         }
 
         Serializers.INTEGER.write(out, NetworkCode.GET_USERS_ACCESS_RESPONSE);
-        Serializers.HASH_MAP_SERIALIZER.write(out, users);
+        Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).write(out, users);
       }
     });
 
