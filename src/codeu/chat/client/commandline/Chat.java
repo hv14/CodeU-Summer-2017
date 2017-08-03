@@ -14,10 +14,7 @@
 
 package codeu.chat.client.commandline;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
 import codeu.chat.common.ServerInfo;
 import codeu.chat.client.core.Context;
@@ -318,7 +315,7 @@ public final class Chat {
 
 
             }
-            HashMap<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
+            Map<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
             if (canUserJoin(conversation)) {
              // System.out.println(conversation.conversation.usersInConvo.get(user.user.id));
               if (userAccess.get(user.user.id) == AccessLevel.owner) {
@@ -352,12 +349,12 @@ public final class Chat {
       }
 
       private boolean canUserJoin(ConversationContext conversation) {
-        HashMap<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
+        Map<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
         return (userAccess.get(user.user.id) != AccessLevel.blocked) ? true : false;
       }
 
       private boolean firstTimeUser(ConversationContext conversation) {
-        HashMap<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
+        Map<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
         return  (userAccess.get(user.user.id) == null) ? true : false;
       }
     });
@@ -400,7 +397,7 @@ public final class Chat {
         System.out.println("  m-add <message>");
         System.out.println("    Add a new message to the current conversation as the current user.");
         System.out.println("  m-change-access <username> <new access level>");
-        System.out.println("    Change the access level of a user.");
+        System.out.println("    Change the access level of a user. Choose between owner, member, or blocked");
         System.out.println("  info");
         System.out.println("    Display all info about the current conversation.");
         System.out.println("  back");

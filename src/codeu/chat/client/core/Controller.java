@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread;
 import java.util.HashMap;
+import java.util.Map;
 
 import codeu.chat.common.BasicController;
 import codeu.chat.common.ConversationHeader;
@@ -110,14 +111,14 @@ final class Controller implements BasicController {
     }
     catch (Exception ex) {
       System.out.println("ERROR: Exception during call on server. Check log for details.");
-      LOG.error(ex, "Exception during call on server.");
+      LOG.info(ex.toString());
     }
 
     return response;
   }
 
   @Override
-  public ConversationHeader newConversation(String title, Uuid owner, String defaultAccessLevel, HashMap<Uuid, AccessLevel> usersInConvo)  {
+  public ConversationHeader newConversation(String title, Uuid owner, String defaultAccessLevel, Map<Uuid, AccessLevel> usersInConvo)  {
 
     ConversationHeader response = null;
 
@@ -135,8 +136,8 @@ final class Controller implements BasicController {
         LOG.error("Response from server failed.");
       }
     } catch (Exception ex) {
-      System.out.println("ERROR: Exception during call on server. Check log for details.");
-      LOG.error(ex, "Exception during call on server.");
+      System.out.println("ERROR: Exception during call on server. Check log for details." + ex.toString());
+      LOG.info(ex.toString());
     }
 
     return response;

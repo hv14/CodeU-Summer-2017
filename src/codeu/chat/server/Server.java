@@ -132,7 +132,7 @@ public final class Server {
         final String title = Serializers.STRING.read(in);
         final Uuid owner = Uuid.SERIALIZER.read(in);
         final String defaultAccessLevel = Serializers.STRING.read(in);
-        final HashMap<Uuid, AccessLevel> usersInConvo = Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).read(in);
+        final Map<Uuid, AccessLevel> usersInConvo = Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).read(in);
         final ConversationHeader conversation = controller.newConversation(title, owner, defaultAccessLevel, usersInConvo);
 
         Serializers.INTEGER.write(out, NetworkCode.NEW_CONVERSATION_RESPONSE);
@@ -171,7 +171,7 @@ public final class Server {
       public void onMessage(InputStream in, OutputStream out) throws IOException {
 
         final Uuid convoId = Uuid.SERIALIZER.read(in);
-        final HashMap<Uuid, AccessLevel> users = view.getUsersAccessInConvo(convoId);
+        final Map<Uuid, AccessLevel> users = view.getUsersAccessInConvo(convoId);
 
         for (Uuid al : users.keySet()) {
           System.out.println(al + " : " + users.get(al));

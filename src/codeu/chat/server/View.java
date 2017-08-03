@@ -14,10 +14,8 @@
 
 package codeu.chat.server;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
+
 import codeu.chat.common.BasicView;
 import codeu.chat.common.ServerInfo;
 import codeu.chat.common.ConversationHeader;
@@ -57,7 +55,7 @@ public final class View implements BasicView, SinglesView {
   }
 
   @Override
-  public HashMap<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId) {
+  public Map<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId) {
     ConversationHeader convo = findConvoById(convoId);
     //LOG.info(convo.title);
     if (convo != null) {

@@ -17,6 +17,7 @@ package codeu.chat.client.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import codeu.chat.common.BasicView;
 import codeu.chat.common.ConversationHeader;
@@ -68,13 +69,13 @@ final class View implements BasicView {
   }
 
   @Override
-  public HashMap<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId) {
+  public Map<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId) {
     try (final Connection connection = this.source.connect()) {
       Serializers.INTEGER.write(connection.out(), NetworkCode.GET_USERS_ACCESS_REQUEST);
       Uuid.SERIALIZER.write(connection.out(), convoId);
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.GET_USERS_ACCESS_RESPONSE) {
-        final HashMap<Uuid, AccessLevel> usersInConvo = Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).read(connection.in());
+        final Map<Uuid, AccessLevel> usersInConvo = Serializers.MAP(Uuid.SERIALIZER, AccessLevel.SERIALIZER).read(connection.in());
         return usersInConvo;
       }
       else {
@@ -123,7 +124,7 @@ final class View implements BasicView {
       }
 
     } catch (Exception ex) {
-      System.out.println("ERROR: Exception during call on server. Check log for details.");
+      System.out.println("ERROR: Exception during call on server. Check log for details." + ex.toString());
       LOG.error(ex, "Exception during call on server.");
     }
 

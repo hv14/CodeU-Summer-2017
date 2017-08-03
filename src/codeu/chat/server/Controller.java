@@ -16,6 +16,7 @@ package codeu.chat.server;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import codeu.chat.common.BasicController;
 import codeu.chat.common.ConversationHeader;
@@ -52,7 +53,7 @@ public final class Controller implements RawController, BasicController {
   }
 
   @Override
-  public ConversationHeader newConversation(String title, Uuid owner, String defaultAccessLevel, HashMap<Uuid, AccessLevel> usersInConvo) {
+  public ConversationHeader newConversation(String title, Uuid owner, String defaultAccessLevel, Map<Uuid, AccessLevel> usersInConvo) {
     return newConversation(createId(), title, owner, Time.now(), defaultAccessLevel, usersInConvo);
   }
 
@@ -151,7 +152,7 @@ public final class Controller implements RawController, BasicController {
   }
 
   @Override
-  public ConversationHeader newConversation(Uuid id, String title, Uuid owner, Time creationTime, String defaultAccessLevel, HashMap<Uuid, AccessLevel> usersInConvo) {
+  public ConversationHeader newConversation(Uuid id, String title, Uuid owner, Time creationTime, String defaultAccessLevel, Map<Uuid, AccessLevel> usersInConvo) {
 
     final User foundOwner = model.userById().first(owner);
 

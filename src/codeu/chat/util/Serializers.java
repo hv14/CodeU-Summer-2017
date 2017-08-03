@@ -124,33 +124,6 @@ public final class Serializers {
     }
   };
 
-  public static final Serializer<HashMap<Uuid, AccessLevel>> HASH_MAP_SERIALIZER = new Serializer<HashMap<Uuid, AccessLevel>>() {
-    @Override
-    public void write(OutputStream out, HashMap<Uuid, AccessLevel> value) throws IOException {
-      FileOutputStream fos =
-              new FileOutputStream("hashmap.ser");
-      ObjectOutputStream oos = new ObjectOutputStream(fos);
-      oos.writeObject(value);
-      oos.close();
-      fos.close();
-
-    }
-
-    @Override
-    public HashMap<Uuid, AccessLevel> read(InputStream in) throws IOException {
-      FileInputStream fis = new FileInputStream("hashmap.ser");
-      ObjectInputStream ois = new ObjectInputStream(fis);
-      HashMap<Uuid, AccessLevel> usersInConvo = null;
-      try {
-        usersInConvo = (HashMap<Uuid, AccessLevel>) ois.readObject();
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
-      }
-      ois.close();
-      fis.close();
-      return usersInConvo;
-    }
-  };
 
   public static <T> Serializer<Collection<T>> collection(final Serializer<T> serializer) {
 
@@ -177,39 +150,36 @@ public final class Serializers {
   }
 
 
-  public static <K, V> Serializer<HashMap<K, V>> MAP (final Serializer<K> keySerializer, final Serializer<V> valueSerializer) {
-
-    return new Serializer<HashMap<K, V>>() {
+  public static <K, V> Serializer<Map<K, V>> MAP(final Serializer<K> keySerializer, final Serializer<V> valueSerializer) {
+    return new Serializer<Map<K, V>>() {
 
       @Override
-      public void write(OutputStream out, HashMap<K, V> value) throws IOException {
+      public void write(OutputStream out, Map<K, V> value) throws IOException {
         INTEGER.write(out, value.size());
-        ArrayList<K> keys = new ArrayList<K>();
-        ArrayList<V> values = new ArrayList<V>();
-        for (K key : value.keySet()) {
-          keys.add(key);
-          values.add(value.get(key));
+        Collection<K> keys = new ArrayList<>(value.size());
+        Collection<V> values = new ArrayList<>(value.size());
+        for (final K x : value.keySet()) {
+          V v = value.get(x);
+          keys.add(x);
+          values.add(v);
         }
-        collection(keySerializer).write(out, keys);
-        collection(valueSerializer).write(out, values);
+        Serializers.collection(keySerializer).write(out, keys);
+        Serializers.collection(valueSerializer).write(out, values);
       }
 
       @Override
-      public HashMap<K,V> read(InputStream in) throws IOException {
+      public Map<K, V> read(InputStream in) throws IOException {
         final int size = INTEGER.read(in);
-        final ArrayList<K> keys = new ArrayList<K>(collection(keySerializer).read(in));
-        final ArrayList<V> values = new ArrayList<V>(collection(valueSerializer).read(in));
-        HashMap<K, V> both = new HashMap<K, V>();
+        List<K> keys = new ArrayList<>(Serializers.collection(keySerializer).read(in));
+        List<V> values = new ArrayList<>(Serializers.collection(valueSerializer).read(in));
+        Map<K, V> hashMap = new HashMap<>(size);
         for (int i = 0; i < size; i++) {
-          both.put(keys.get(i), values.get(i));
+          hashMap.put(keys.get(i), values.get(i));
         }
-
-        return both;
+        return hashMap;
       }
-
     };
-
-  };
+  }
 
   public static <T> Serializer<T> nullable(final Serializer<T> serializer) {
 
