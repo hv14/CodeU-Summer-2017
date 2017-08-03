@@ -26,6 +26,7 @@ import codeu.chat.client.core.MessageContext;
 import codeu.chat.client.core.UserContext;
 import codeu.chat.common.User;
 import codeu.chat.common.ServerInfo;
+import codeu.chat.util.Uuid;
 
 
 public final class Chat {
