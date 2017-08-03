@@ -92,6 +92,19 @@ public final class Server {
       }
     });
 
+    this.commands.put(NetworkCode.LIKE_MSG_REQUEST, new Command() {
+      @Override
+      public void onMessage(InputStream in, OutputStream out) throws IOException {
+
+        final Uuid lastMsg = Uuid.SERIALIZER.read(in);
+        final int totalLikes = controller.likeMessage(lastMsg);
+
+        Serializers.INTEGER.write(out, NetworkCode.LIKE_MSG_RESPONSE);
+        Serializers.INTEGER.write(out, totalLikes);
+
+      }
+    });
+
 
     // Info Request
     this.commands.put(NetworkCode.SERVER_INFO_REQUEST,  new Command() {

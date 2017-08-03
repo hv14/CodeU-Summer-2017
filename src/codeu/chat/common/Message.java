@@ -38,6 +38,7 @@ public final class Message {
       Uuid.SERIALIZER.write(out, value.author);
       Serializers.STRING.write(out, value.content);
       Uuid.SERIALIZER.write(out, value.convoId);
+      Serializers.INTEGER.write(out, value.likes);
 
     }
 
@@ -51,7 +52,8 @@ public final class Message {
           Time.SERIALIZER.read(in),
           Uuid.SERIALIZER.read(in),
           Serializers.STRING.read(in),
-          Uuid.SERIALIZER.read(in)
+          Uuid.SERIALIZER.read(in),
+          Serializers.INTEGER.read(in)
       );
 
     }
@@ -64,9 +66,9 @@ public final class Message {
   public final String content;
   public final Uuid convoId;
   public Uuid next;
-  public Uuid convoId;
+  public int likes;
 
-  public Message(Uuid id, Uuid next, Uuid previous, Time creation, Uuid author, String content, Uuid convoId) {
+  public Message(Uuid id, Uuid next, Uuid previous, Time creation, Uuid author, String content, Uuid convoId, int likes) {
 
     this.id = id;
     this.next = next;
@@ -75,6 +77,7 @@ public final class Message {
     this.author = author;
     this.content = content;
     this.convoId = convoId;
+    this.likes = likes;
 
   }
 }
