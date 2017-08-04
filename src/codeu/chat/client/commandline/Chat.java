@@ -323,8 +323,11 @@ public final class Chat {
               } else if (userAccess.get(user.user.id) == AccessLevel.creator) {
                 panels.push(createCreatorConversationPanel(conversation));
               }
+              else if (userAccess.get(user.user.id) == AccessLevel.member){
+                panels.push(createMemberConversationPanel(conversation));
+              }
               else {
-                panels.push(createConversationPanel(conversation));
+                panels.push(createMuteConversationPanel(conversation));
               }
             }
             else {
@@ -396,6 +399,8 @@ public final class Chat {
         System.out.println("    List all messages in the current conversation.");
         System.out.println("  m-add <message>");
         System.out.println("    Add a new message to the current conversation as the current user.");
+        System.out.println("  m-mute <username>");
+        System.out.println("    Prohibit a user from sending messages in the chat. They will only be able to read messages");
         System.out.println("  m-change-access <username> <new access level>");
         System.out.println("    Change the access level of a user. Choose between owner, member, or blocked");
         System.out.println("  info");
@@ -460,6 +465,43 @@ public final class Chat {
             if (otherUser != null) {
               conversation.changeUserAccessLevel(otherUser, newAccessLevel);
             }
+          }
+          else {
+            System.out.println("ERROR: access level must be 'owner', 'member', or 'blocked'");
+          }
+        }
+        else {
+          System.out.println("ERROR: Please make sure to specify a username and a new access level");
+        }
+      }
+
+      public User findOtherUser(String name) {
+        try {
+          Iterator<User> it = conversation.view.getUsers().iterator();
+          while (it.hasNext()) {
+            User curr = it.next();
+            if (curr.name.equalsIgnoreCase(name)) {
+              return curr;
+            }
+          }
+        }
+        catch (Exception e) {
+          System.out.println(e);
+        }
+
+        return null;
+      }
+    });
+
+
+    panel.register("m-mute", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        final String otherUsername = args.hasNext() ? args.next() : "";
+        if (otherUsername.length() > 0) {
+          User otherUser = findOtherUser(otherUsername);
+          if (otherUser != null) {
+            conversation.changeUserAccessLevel(otherUser, "mute");
           }
           else {
             System.out.println("ERROR: access level must be 'owner', 'member', or 'blocked'");
@@ -587,7 +629,14 @@ public final class Chat {
         final String username = args.hasNext() ? args.nextLine().trim() : "";
         if (username.length() > 0) {
           User user = findOtherUser(username);
-          conversation.changeUserAccessLevel(user, "blocked");
+          Map<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
+          if (userAccess.get(user.id) == AccessLevel.creator ||
+                  userAccess.get(user.id) == AccessLevel.owner) {
+            System.out.println("ERROR: As an owner you can only change access for members. Not creators or other owners");
+          }
+          else {
+            conversation.changeUserAccessLevel(user, "blocked");
+          }
         } else {
           System.out.println("ERROR: Please specify a username");
         }
@@ -632,20 +681,7 @@ public final class Chat {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  private Panel createConversationPanel(final ConversationContext conversation) {
+  private Panel createMemberConversationPanel(final ConversationContext conversation) {
 
     final Panel panel = new Panel();
 
@@ -708,6 +744,75 @@ public final class Chat {
         } else {
           System.out.println("ERROR: Messages must contain text");
         }
+      }
+    });
+
+    // INFO
+    //
+    // Add a command to print info about the current conversation when the user
+    // enters "info" while on the conversation panel.
+    //
+    panel.register("info", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("Conversation Info:");
+        System.out.format("  Title : %s\n", conversation.conversation.title);
+        System.out.format("  Id    : UUID:%s\n", conversation.conversation.id);
+        System.out.format("  Owner : %s\n", conversation.conversation.owner);
+      }
+    });
+
+    // Now that the panel has all its commands registered, return the panel
+    // so that it can be used.
+    return panel;
+  }
+
+
+
+  private Panel createMuteConversationPanel(final ConversationContext conversation) {
+
+    final Panel panel = new Panel();
+
+    // HELP
+    //
+    // Add a command that will print all the commands and their descriptions
+    // when the user enters "help" while on the conversation panel.
+    //
+    panel.register("help", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("USER MODE");
+        System.out.println("  m-list");
+        System.out.println("    List all messages in the current conversation.");
+        System.out.println("  info");
+        System.out.println("    Display all info about the current conversation.");
+        System.out.println("  back");
+        System.out.println("    Go back to USER MODE.");
+        System.out.println("  exit");
+        System.out.println("    Exit the program.");
+      }
+    });
+
+    // M-LIST (list messages)
+    //
+    // Add a command to print all messages in the current conversation when the
+    // user enters "m-list" while on the conversation panel.
+    //
+    panel.register("m-list", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        System.out.println("--- start of conversation ---");
+        for (MessageContext message = conversation.firstMessage();
+             message != null;
+             message = message.next()) {
+          System.out.println();
+          System.out.format("USER : %s\n", message.message.author);
+          System.out.format("SENT : %s\n", message.message.creation);
+          System.out.println();
+          System.out.println(message.message.content);
+          System.out.println();
+        }
+        System.out.println("---  end of conversation  ---");
       }
     });
 
