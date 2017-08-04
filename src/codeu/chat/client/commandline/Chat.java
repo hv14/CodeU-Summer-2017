@@ -856,6 +856,9 @@ public final class Chat {
             if (otherUser != null) {
               conversation.changeUserAccessLevel(otherUser, newAccessLevel);
             }
+            else {
+              System.out.println("ERROR: could not find " + otherUsername);
+            }
           }
           else {
             System.out.println("ERROR: access level must be 'owner', 'member', or 'blocked'");
@@ -895,7 +898,7 @@ public final class Chat {
             conversation.changeUserAccessLevel(otherUser, "mute");
           }
           else {
-            System.out.println("ERROR: access level must be 'owner', 'member', or 'blocked'");
+            System.out.println("ERROR: could not find " + otherUsername);
           }
         }
         else {
@@ -1020,14 +1023,20 @@ public final class Chat {
         final String username = args.hasNext() ? args.nextLine().trim() : "";
         if (username.length() > 0) {
           User user = findOtherUser(username);
-          Map<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
-          if (userAccess.get(user.id) == AccessLevel.creator ||
-                  userAccess.get(user.id) == AccessLevel.owner) {
-            System.out.println("ERROR: As an owner you can only change access for members. Not creators or other owners");
+          if (user != null) {
+            Map<Uuid, AccessLevel> userAccess = conversation.view.getUsersAccessInConvo(conversation.conversation.id);
+            if (userAccess.get(user.id) == AccessLevel.creator ||
+                    userAccess.get(user.id) == AccessLevel.owner) {
+              System.out.println("ERROR: As an owner you can only change access for members. Not creators or other owners");
+            }
+            else {
+              conversation.changeUserAccessLevel(user, "blocked");
+            }
           }
           else {
-            conversation.changeUserAccessLevel(user, "blocked");
+            System.out.println("ERROR: could not find " + username);
           }
+
         } else {
           System.out.println("ERROR: Please specify a username");
         }
