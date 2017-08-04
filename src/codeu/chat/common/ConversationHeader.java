@@ -69,6 +69,7 @@ public final class ConversationHeader {
     this.defaultAccessLevel = AccessLevel.valueOf(defaultAccessLevel);
     this.usersInConvo = usersInConvo;
 
+
   }
 
 

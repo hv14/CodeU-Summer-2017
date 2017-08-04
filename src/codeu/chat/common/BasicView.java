@@ -17,8 +17,12 @@ package codeu.chat.common;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import codeu.chat.util.AccessLevel;
+import codeu.chat.common.ConversationHeader;
+import codeu.chat.common.ConversationPayload;
+import codeu.chat.common.Message;
+import codeu.chat.common.User;
+import codeu.chat.common.ServerInfo;
 import codeu.chat.util.Uuid;
 
 // BASIC VIEW

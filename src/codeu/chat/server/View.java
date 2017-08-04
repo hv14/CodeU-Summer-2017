@@ -13,17 +13,10 @@
 // limitations under the License.
 
 package codeu.chat.server;
-
 import java.util.*;
-
-import codeu.chat.common.BasicView;
-import codeu.chat.common.ServerInfo;
-import codeu.chat.common.ConversationHeader;
-import codeu.chat.common.ConversationPayload;
-import codeu.chat.common.Message;
-import codeu.chat.common.SinglesView;
-import codeu.chat.common.User;
 import codeu.chat.util.AccessLevel;
+import codeu.chat.common.*;
+
 import codeu.chat.util.Logger;
 import codeu.chat.util.Uuid;
 import codeu.chat.util.store.StoreAccessor;

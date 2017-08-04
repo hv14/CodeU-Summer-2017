@@ -17,6 +17,7 @@ package codeu.chat.common;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.UUID;
 
 import codeu.chat.util.Serializer;
 import codeu.chat.util.Serializers;
@@ -36,6 +37,7 @@ public final class Message {
       Time.SERIALIZER.write(out, value.creation);
       Uuid.SERIALIZER.write(out, value.author);
       Serializers.STRING.write(out, value.content);
+      Uuid.SERIALIZER.write(out, value.convoId);
 
     }
 
@@ -48,7 +50,8 @@ public final class Message {
           Uuid.SERIALIZER.read(in),
           Time.SERIALIZER.read(in),
           Uuid.SERIALIZER.read(in),
-          Serializers.STRING.read(in)
+          Serializers.STRING.read(in),
+          Uuid.SERIALIZER.read(in)
       );
 
     }
@@ -59,9 +62,11 @@ public final class Message {
   public final Time creation;
   public final Uuid author;
   public final String content;
+  public final Uuid convoId;
   public Uuid next;
+  public Uuid convoId;
 
-  public Message(Uuid id, Uuid next, Uuid previous, Time creation, Uuid author, String content) {
+  public Message(Uuid id, Uuid next, Uuid previous, Time creation, Uuid author, String content, Uuid convoId) {
 
     this.id = id;
     this.next = next;
@@ -69,6 +74,7 @@ public final class Message {
     this.creation = creation;
     this.author = author;
     this.content = content;
+    this.convoId = convoId;
 
   }
 }
