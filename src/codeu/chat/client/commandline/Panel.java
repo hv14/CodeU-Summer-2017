@@ -53,7 +53,7 @@ final class Panel {
   public boolean handleCommand(String commandName, List<String> args) {
     final Command command = commands.get(commandName);
     if (command != null) {
-      command.invoke(line);
+      command.invoke(args);
     }
     return command != null;
   }
