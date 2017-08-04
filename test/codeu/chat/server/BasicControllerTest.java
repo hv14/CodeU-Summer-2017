@@ -60,9 +60,9 @@ public final class BasicControllerTest {
 
     HashMap<Uuid, AccessLevel> usersInConvo = new HashMap<>();
     final ConversationHeader conversation = controller.newConversation(
-        "conversation",
-        user.id,
-            "owner", usersInConvo);
+            "conversation",
+                  user.id,
+ "owner", usersInConvo);
 
     assertFalse(
         "Check that conversation has a valid reference",

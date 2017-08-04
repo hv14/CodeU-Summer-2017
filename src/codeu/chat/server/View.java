@@ -50,7 +50,6 @@ public final class View implements BasicView, SinglesView {
   @Override
   public Map<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId) {
     ConversationHeader convo = findConvoById(convoId);
-    //LOG.info(convo.title);
     if (convo != null) {
       return convo.usersInConvo;
     }

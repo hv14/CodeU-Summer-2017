@@ -48,13 +48,8 @@ public final class ConversationContext {
     this.controller = controller;
   }
 
-  public void addDefaultAccessLevel(AccessLevel defaultAccessLevel) {
-   // conversation.defaultAccessLevel = defaultAccessLevel;
-  }
-
   public String changeUserAccessLevel(User user, String accessLevel) {
     return controller.changeUserAccess(user.id, AccessLevel.valueOf(accessLevel), conversation.id);
-    //conversation.usersInConvo.put(user.id, AccessLevel.valueOf(accessLevel));
   }
 
   public void removeUser(User user) {

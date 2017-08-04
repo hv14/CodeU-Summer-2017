@@ -329,7 +329,7 @@ public final class Server {
                                                 relayConversation.text(),
                                                 user.id,
                                                 relayConversation.time(),
-              "owner", usersInConvo);
+                               "owner", usersInConvo);
     }
 
     Message message = model.messageById().first(relayMessage.id());

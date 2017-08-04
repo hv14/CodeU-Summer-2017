@@ -102,7 +102,6 @@ final class Controller implements BasicController {
       Uuid.SERIALIZER.write(connection.out(), user);
       Serializers.STRING.write(connection.out(), newAccess.toString());
       Uuid.SERIALIZER.write(connection.out(), convoId);
-      //Serializers.STRING.write(connection.out(), user.toString() + ":" + newAccess.toString());
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.CHANGE_USER_ACCESS_RESPONSE) {
         response = Serializers.nullable(Serializers.STRING).read(connection.in());
