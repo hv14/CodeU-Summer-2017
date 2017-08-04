@@ -14,6 +14,8 @@
 
 package codeu.chat.client.commandline;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -23,6 +25,7 @@ import codeu.chat.client.core.ConversationContext;
 import codeu.chat.client.core.MessageContext;
 import codeu.chat.client.core.UserContext;
 import codeu.chat.common.ServerInfo;
+import codeu.chat.util.Tokenizer;
 
 public final class Chat {
 
@@ -71,7 +74,7 @@ public final class Chat {
     }
 
     if (panels.peek().handleCommand(command, tokens)) {
-      // the command was handled
+       the command was handled
       return true;
     }
 
