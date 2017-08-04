@@ -56,6 +56,7 @@ final class Controller implements BasicController {
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_MESSAGE_RESPONSE) {
         response = Serializers.nullable(Message.SERIALIZER).read(connection.in());
+
       } else {
         LOG.error("Response from server failed.");
       }
@@ -81,6 +82,7 @@ final class Controller implements BasicController {
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_USER_RESPONSE) {
         response = Serializers.nullable(User.SERIALIZER).read(connection.in());
         LOG.info("newUser: Response completed.");
+
       } else {
         LOG.error("Response from server failed.");
       }

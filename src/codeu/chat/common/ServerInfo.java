@@ -52,5 +52,4 @@ public final class ServerInfo {
     this.startTime = startTime;
 
   }
-
 }

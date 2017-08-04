@@ -43,16 +43,18 @@ public final class Context {
         new UserContext(user, view, controller);
   }
 
+
+  public ServerInfo getInfo() {
+    return view.getInfo();
+  }
+
+
   public Iterable<UserContext> allUsers() {
     final Collection<UserContext> users = new ArrayList<>();
     for (final User user : view.getUsers()) {
       users.add(new UserContext(user, view, controller));
     }
     return users;
-  }
-
-  public ServerInfo getInfo() {
-    return view.getInfo();
   }
 
 }
