@@ -729,6 +729,8 @@ public final class Chat {
         System.out.println("USER MODE");
         System.out.println("  m-list");
         System.out.println("    List all messages in the current conversation.");
+        System.out.println("  m-like");
+        System.out.println("    This will like the last message in the conversation.");
         System.out.println("  m-add <message>");
         System.out.println("    Add a new message to the current conversation as the current user.");
         System.out.println("  info");
@@ -755,6 +757,7 @@ public final class Chat {
           System.out.println();
           System.out.format("USER : %s\n", message.message.author);
           System.out.format("SENT : %s\n", message.message.creation);
+          System.out.format("LIKES : %s\n", message.message.likes);
           System.out.println();
           System.out.println(message.message.content);
           System.out.println();
@@ -777,6 +780,13 @@ public final class Chat {
         } else {
           System.out.println("ERROR: Messages must contain text");
         }
+      }
+    });
+
+    panel.register("m-like", new Panel.Command() {
+      @Override
+      public void invoke(Scanner args) {
+        conversation.like();
       }
     });
 

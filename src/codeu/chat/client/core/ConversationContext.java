@@ -56,6 +56,11 @@ public final class ConversationContext {
         new MessageContext(message, view);
   }
 
+  public void like() {
+    MessageContext lastMessage = lastMessage();
+    controller.likeMessage(lastMessage.message.id);
+  }
+
   public MessageContext firstMessage() {
 
     // As it is possible for the conversation to have been updated, so fetch
