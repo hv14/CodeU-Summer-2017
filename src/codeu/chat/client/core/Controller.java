@@ -53,6 +53,30 @@ final class Controller implements BasicController {
 
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_MESSAGE_RESPONSE) {
         response = Serializers.nullable(Message.SERIALIZER).read(connection.in());
+
+      } else {
+        LOG.error("Response from server failed.");
+      }
+    } catch (Exception ex) {
+      System.out.println("ERROR: Exception during call on server. Check log for details.");
+      LOG.error(ex, "Exception during call on server.");
+    }
+
+    return response;
+  }
+
+  @Override
+  public int likeMessage(Uuid lastMsgId) {
+    int response = 0;
+
+    try (final Connection connection = source.connect()) {
+
+      Serializers.INTEGER.write(connection.out(), NetworkCode.LIKE_MSG_REQUEST);
+      Uuid.SERIALIZER.write(connection.out(), lastMsgId);
+
+      if (Serializers.INTEGER.read(connection.in()) == NetworkCode.LIKE_MSG_RESPONSE) {
+        response = Serializers.INTEGER.read(connection.in());
+
       } else {
         LOG.error("Response from server failed.");
       }
@@ -78,6 +102,7 @@ final class Controller implements BasicController {
       if (Serializers.INTEGER.read(connection.in()) == NetworkCode.NEW_USER_RESPONSE) {
         response = Serializers.nullable(User.SERIALIZER).read(connection.in());
         LOG.info("newUser: Response completed.");
+
       } else {
         LOG.error("Response from server failed.");
       }

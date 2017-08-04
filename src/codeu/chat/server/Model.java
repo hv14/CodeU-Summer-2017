@@ -14,19 +14,50 @@
 
 package codeu.chat.server;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.Queue;
 
-import codeu.chat.common.ConversationHeader;
-import codeu.chat.common.ConversationPayload;
-import codeu.chat.common.LinearUuidGenerator;
-import codeu.chat.common.Message;
-import codeu.chat.common.User;
+import codeu.chat.common.*;
+import codeu.chat.util.Json;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
 import codeu.chat.util.store.Store;
 import codeu.chat.util.store.StoreAccessor;
+import com.google.gson.Gson;
 
 public final class Model {
+
+  public ArrayList<User> currentUsers = new ArrayList<>();
+  public ArrayList<Message> currentMessages = new ArrayList<>();
+  public ArrayList<ConversationHeader> currentConversations = new ArrayList<>();
+
+
+  //Used to load the saved users and conversations
+  public void refreshData() {
+    Gson gson = new Gson();
+    Json json = new Json();
+    try {
+      String jsonUsers = json.read("savedUsers.txt");
+      UserCollection pastUsers = gson.fromJson(jsonUsers, UserCollection.class);
+
+      String jsonConversations = json.read("savedConvos.txt");
+      ConversationCollection pastConovs = gson.fromJson(jsonConversations, ConversationCollection.class);
+
+      for (User user: pastUsers.users) {
+        add(user);
+      }
+
+      for (ConversationHeader convo: pastConovs.conversations) {
+        add(convo);
+      }
+
+    } catch (Exception ex) {
+      System.out.println(ex);
+    }
+  }
 
   private static final Comparator<Uuid> UUID_COMPARE = new Comparator<Uuid>() {
 
@@ -71,6 +102,9 @@ public final class Model {
     userById.insert(user.id, user);
     userByTime.insert(user.creation, user);
     userByText.insert(user.name, user);
+
+    //add the user to an array that is used to save to a text file
+    currentUsers.add(user);
   }
 
   public StoreAccessor<Uuid, User> userById() {
@@ -90,6 +124,9 @@ public final class Model {
     conversationByTime.insert(conversation.creation, conversation);
     conversationByText.insert(conversation.title, conversation);
     conversationPayloadById.insert(conversation.id, new ConversationPayload(conversation.id));
+
+    //add the conversation to an array that is used to save to a text file
+    currentConversations.add(conversation);
   }
 
   public StoreAccessor<Uuid, ConversationHeader> conversationById() {
@@ -112,6 +149,9 @@ public final class Model {
     messageById.insert(message.id, message);
     messageByTime.insert(message.creation, message);
     messageByText.insert(message.content, message);
+
+    //add the message to an array that is used to save to a text file
+    currentMessages.add(message);
   }
 
   public StoreAccessor<Uuid, Message> messageById() {

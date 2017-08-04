@@ -62,5 +62,6 @@ public final class ConversationHeader {
     this.creation = creation;
     this.title = title;
 
+
   }
 }

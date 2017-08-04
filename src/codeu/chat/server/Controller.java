@@ -14,18 +14,16 @@
 
 package codeu.chat.server;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
-import codeu.chat.common.BasicController;
-import codeu.chat.common.ConversationHeader;
-import codeu.chat.common.ConversationPayload;
-import codeu.chat.common.Message;
-import codeu.chat.common.RandomUuidGenerator;
-import codeu.chat.common.RawController;
-import codeu.chat.common.User;
+import codeu.chat.common.*;
+import codeu.chat.util.Json;
 import codeu.chat.util.Logger;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
+import com.google.gson.Gson;
 
 public final class Controller implements RawController, BasicController {
 
@@ -39,9 +37,47 @@ public final class Controller implements RawController, BasicController {
     this.uuidGenerator = new RandomUuidGenerator(serverId, System.currentTimeMillis());
   }
 
+  // Used to load the saved messages
+  public void refreshData() {
+    Gson gson = new Gson();
+    Json json = new Json();
+    try {
+      String jsonMessages = json.read("savedMessages.txt");
+      MessageCollection pastMessages = gson.fromJson(jsonMessages, MessageCollection.class);
+      for (Message msg: pastMessages.messages) {
+        newMessage(msg.id, msg.author, msg.convoId, msg.content, msg.creation);
+      }
+    }
+    catch (Exception ex) {
+      System.out.println(ex);
+    }
+  }
+
+
+
   @Override
   public Message newMessage(Uuid author, Uuid conversation, String body) {
     return newMessage(createId(), author, conversation, body, Time.now());
+  }
+
+  @Override
+  public int likeMessage(Uuid lastMsgId) {
+    Message msg = findMsgById(lastMsgId);
+    if (msg != null) {
+      msg.likes = msg.likes + 1;
+    }
+
+    return msg.likes;
+  }
+
+  private Message findMsgById(Uuid msgId) {
+    for (Message msg : model.currentMessages) {
+      if (msg.id.equals(msgId)) {
+        return msg;
+      }
+    }
+
+    return null;
   }
 
   @Override
@@ -64,7 +100,8 @@ public final class Controller implements RawController, BasicController {
 
     if (foundUser != null && foundConversation != null && isIdFree(id)) {
 
-      message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body);
+      message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body, foundConversation.id, 0);
+
       model.add(message);
       LOG.info("Message added: %s", message.id);
 
