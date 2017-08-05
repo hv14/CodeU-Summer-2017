@@ -5,7 +5,7 @@ import java.util.logging.Level;
 
 public final class Tokenizer {
   
-  private StringBuilder token;
+  private StringBuilder token = new StringBuilder();
   private String source;
   private int charPos;
 
