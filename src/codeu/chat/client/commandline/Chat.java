@@ -321,7 +321,7 @@ public final class Chat {
     //
     panel.register("u-info", new Panel.Command() {
       @Override
-      public void invoke(Scanner args) {
+      public void invoke(List<String> args) {
         final ServerInfo info = context.getInfo();
         if (info == null) {
           System.out.println("No info was found");
@@ -806,7 +806,7 @@ public final class Chat {
 
     panel.register("m-like", new Panel.Command() {
       @Override
-      public void invoke(Scanner args) {
+      public void invoke(List<String> args) {
         conversation.like();
       }
     });

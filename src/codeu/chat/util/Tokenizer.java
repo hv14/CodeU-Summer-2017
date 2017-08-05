@@ -7,29 +7,28 @@ public final class Tokenizer {
   
   private StringBuilder token;
   private String source;
-  private int at;
+  private int charPos;
 
-  
-  
   public Tokenizer(String s) { 
     source = s;
   }
   
   private int remaining() {
-    return source.length() - at;
-    }
+    return source.length() - charPos;
+  }
   
   private char peek() throws IOException {
-    if (at < source.length()) {
-      return source.charAt(at);
+    if (charPos < source.length()) {
+      return source.charAt(charPos);
     } else {
       throw new IOException("End Of String");
     }
+
   }
   
   private char read() throws IOException {
     final char c = peek();
-    at += 1;
+    charPos += 1;
     return c;
   }
   
@@ -42,12 +41,12 @@ public final class Tokenizer {
       if (remaining() <= 0) {
         return null;
      } else if (peek() == '"') {
-        tokenCreation = readWithQuotes(); //need to check
+        tokenCreation = readWithQuotes(); 
       } else {
-        tokenCreation = readWithNoQuotes();  //need to check
+        tokenCreation = readWithNoQuotes();  
       }
     return tokenCreation;
-}
+  }
 
   private String readWithNoQuotes() throws IOException {
     token.setLength(0);  // clear the token
@@ -68,4 +67,5 @@ public final class Tokenizer {
     read();
     return token.toString();
   }
+
 }
