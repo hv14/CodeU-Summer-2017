@@ -15,6 +15,7 @@
 package codeu.chat.server;
 
 import java.io.*;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -29,6 +30,7 @@ import codeu.chat.util.store.StoreAccessor;
 import com.google.gson.Gson;
 
 public final class Model {
+
 
   public ArrayList<User> currentUsers = new ArrayList<>();
   public ArrayList<Message> currentMessages = new ArrayList<>();
@@ -60,6 +62,7 @@ public final class Model {
   }
 
   private static final Comparator<Uuid> UUID_COMPARE = new Comparator<Uuid>() {
+
 
     @Override
     public int compare(Uuid a, Uuid b) {
@@ -125,7 +128,6 @@ public final class Model {
     conversationByText.insert(conversation.title, conversation);
     conversationPayloadById.insert(conversation.id, new ConversationPayload(conversation.id));
 
-    //add the conversation to an array that is used to save to a text file
     currentConversations.add(conversation);
   }
 

@@ -14,6 +14,8 @@
 
 package codeu.chat.client.core;
 
+import codeu.chat.util.AccessLevel;
+
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -116,12 +118,14 @@ public final class UserContext {
     return null;
   }
 
-  public ConversationContext start(String name) {
-    final ConversationHeader conversation = controller.newConversation(name, user.id);
+  public ConversationContext start(String name, String defaultAcessLevel, HashMap<Uuid, AccessLevel> usersInConvo) {
+    final ConversationHeader conversation = controller.newConversation(name, user.id, defaultAcessLevel, usersInConvo);
+
     return conversation == null ?
         null :
         new ConversationContext(user, conversation, view, controller);
   }
+
 
   public Iterable<ConversationContext> conversations() {
 

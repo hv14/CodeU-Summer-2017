@@ -15,6 +15,8 @@
 package codeu.chat.server;
 
 import static org.junit.Assert.*;
+
+import codeu.chat.util.AccessLevel;
 import org.junit.Test;
 import org.junit.Before;
 
@@ -24,6 +26,8 @@ import codeu.chat.common.RawController;
 import codeu.chat.common.User;
 import codeu.chat.util.Time;
 import codeu.chat.util.Uuid;
+
+import java.util.HashMap;
 
 public final class RawControllerTest {
 
@@ -69,11 +73,12 @@ public final class RawControllerTest {
         "Check that the user has the correct id",
         Uuid.equals(user.id, userId));
 
+    HashMap<Uuid, AccessLevel> usersInConvo = new HashMap<>();
     final ConversationHeader conversation = controller.newConversation(
         conversationId,
         "conversation",
         user.id,
-        Time.now());
+        Time.now(), "owner", usersInConvo);
 
     assertFalse(
         "Check that conversation has a valid reference",
@@ -95,11 +100,12 @@ public final class RawControllerTest {
         "Check that the user has the correct id",
         Uuid.equals(user.id, userId));
 
+    HashMap<Uuid, AccessLevel> usersInConvo = new HashMap<>();
     final ConversationHeader conversation = controller.newConversation(
         conversationId,
         "conversation",
         user.id,
-        Time.now());
+        Time.now(), "owner", usersInConvo);
 
     assertFalse(
         "Check that conversation has a valid reference",

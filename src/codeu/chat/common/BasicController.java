@@ -14,7 +14,11 @@
 
 package codeu.chat.common;
 
+import codeu.chat.util.AccessLevel;
 import codeu.chat.util.Uuid;
+
+import java.util.HashMap;
+import java.util.Map;
 
 // BASIC CONTROLLER
 //
@@ -49,7 +53,10 @@ public interface BasicController {
   //  operation is successful, a Conversation object will be returned
   //  representing the full state of the conversation on the server.
   //  Whether conversations can have the same title is undefined.
-  ConversationHeader newConversation(String title, Uuid owner);
+  ConversationHeader newConversation(String title, Uuid owner, String defaultAccessLevel, Map<Uuid, AccessLevel> usersInConvo);
+
+
+  String changeUserAccess(Uuid user, AccessLevel newAccess, Uuid convoId);
 
   int likeMessage(Uuid lastMsgId);
 

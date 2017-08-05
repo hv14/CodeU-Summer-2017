@@ -13,19 +13,9 @@
 // limitations under the License.
 
 package codeu.chat.server;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-
+import java.util.*;
+import codeu.chat.util.AccessLevel;
 import codeu.chat.common.*;
-
 
 import codeu.chat.util.Logger;
 import codeu.chat.util.Uuid;
@@ -55,6 +45,26 @@ public final class View implements BasicView, SinglesView {
   @Override
   public Collection<ConversationPayload> getConversationPayloads(Collection<Uuid> ids) {
     return intersect(model.conversationPayloadById(), ids);
+  }
+
+  @Override
+  public Map<Uuid, AccessLevel> getUsersAccessInConvo(Uuid convoId) {
+    ConversationHeader convo = findConvoById(convoId);
+    if (convo != null) {
+      return convo.usersInConvo;
+    }
+
+    return null;
+  }
+
+  public ConversationHeader findConvoById(Uuid convoId) {
+    for (ConversationHeader convo : model.currentConversations) {
+      if (convo.id.equals(convoId)) {
+        return convo;
+      }
+    }
+
+    return null;
   }
 
   @Override
