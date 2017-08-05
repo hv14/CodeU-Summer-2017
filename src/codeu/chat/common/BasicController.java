@@ -58,4 +58,7 @@ public interface BasicController {
 
   String changeUserAccess(Uuid user, AccessLevel newAccess, Uuid convoId);
 
+  int likeMessage(Uuid lastMsgId);
+
+
 }

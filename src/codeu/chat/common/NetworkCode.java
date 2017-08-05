@@ -43,4 +43,6 @@ public final class NetworkCode {
       CHANGE_USER_ACCESS_RESPONSE  = 34,
       GET_USERS_ACCESS_REQUEST   = 35,
       GET_USERS_ACCESS_RESPONSE = 36;
+      LIKE_MSG_REQUEST = 37,
+      LIKE_MSG_RESPONSE = 38;
 }

@@ -64,6 +64,26 @@ public final class Controller implements RawController, BasicController {
   }
 
   @Override
+  public int likeMessage(Uuid lastMsgId) {
+    Message msg = findMsgById(lastMsgId);
+    if (msg != null) {
+      msg.likes = msg.likes + 1;
+    }
+
+    return msg.likes;
+  }
+
+  private Message findMsgById(Uuid msgId) {
+    for (Message msg : model.currentMessages) {
+      if (msg.id.equals(msgId)) {
+        return msg;
+      }
+    }
+
+    return null;
+  }
+
+  @Override
   public User newUser(String name) {
     return newUser(createId(), name, Time.now());
   }
@@ -83,7 +103,7 @@ public final class Controller implements RawController, BasicController {
 
     if (foundUser != null && foundConversation != null && isIdFree(id)) {
 
-      message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body, foundConversation.id);
+      message = new Message(id, Uuid.NULL, Uuid.NULL, creationTime, author, body, foundConversation.id, 0);
 
       model.add(message);
       LOG.info("Message added: %s", message.id);
